@@ -35,6 +35,9 @@ class WalletChangeController extends Controller
      */
     public function actionIndex()
     {
+        if (!in_array(@$_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1', '85.113.51.234'])) {
+            die('You are not allowed to access this file.');
+        }
         $searchModel = new WalletChangeSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
