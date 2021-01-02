@@ -27,19 +27,29 @@ class WapiController extends ActiveController
         return $this->lastWallet;
     }
 
+    /*
+     * todo create global endpoint to telegram, with help, and call this method from there
+     */
     public function actionSetWalletChange()
     {
-        $changeValue = Yii::$app->request->get('change_value');
-        $comment = Yii::$app->request->get('comment');
-        $entityCode = Yii::$app->request->get('entity_code');
+        $message = Yii::$app->request->post('message');
+        try {
+            $params = $this->parseCommand($message['text']);
 
-        if (!isset($entityCode) || !isset($changeValue)) {
-            throw new InvalidArgumentException();
-        }
+            $changeValue = $params[0];
+            $entityCode = $params[1];
+            $comment = $params[2];
 
-        $entityName = Wallet::getFieldByCode()[$entityCode] ?? null;
-        if ($entityName === null) {
-            throw new InvalidArgumentException();
+            if (!isset($entityCode) || !isset($changeValue)) {
+                throw new InvalidArgumentException();
+            }
+
+            $entityName = Wallet::getFieldByCode()[(int)$entityCode] ?? null;
+            if ($entityName === null) {
+                throw new InvalidArgumentException();
+            }
+        } catch (InvalidArgumentException $exception) {
+            return true;
         }
 
         $newWalletChange = new WalletChange();
@@ -49,12 +59,36 @@ class WapiController extends ActiveController
 
         if (!$newWalletChange->save()) {
             print_r($newWalletChange->getErrors());
-            return false;
+            return true;
         }
+        $lastLastWallet = Wallet::find()->where(['id' => $newWalletChange->wallet_id])->one();
+        $message = 'Success'  . $newWalletChange->id . ' ' . $newWalletChange->entity_name . ' New total sum' . $lastLastWallet->money_all;
 
-        $this->telegramService->sendMessage('Success!');
+        $this->telegramService->sendMessage($message);
 
         return $newWalletChange;
+    }
+
+    /*
+     * todo вынести в сервис
+     */
+    private function parseCommand(string $text): array
+    {
+        if ($text === TelegramService::COMMAND_HELP) {
+            $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
+            $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
+            $this->telegramService->sendMessage($message);
+
+            throw new InvalidArgumentException();
+        }
+
+        $array = explode(' ', trim($text));
+        if (count($array) !== 3) {
+            $this->telegramService->sendMessage('Нужно три слова');
+            throw new InvalidArgumentException();
+        }
+
+        return $array;
     }
 }
 
