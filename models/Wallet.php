@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "wallet".
@@ -35,6 +36,13 @@ class Wallet extends \yii\db\ActiveRecord
     {
         return [
             [['money_all', 'money_everyday', 'money_medfond', 'money_long_clothes', 'money_long_gifts', 'money_long_reserves', 'money_long_deposits', 'money_credits'], 'integer'],
+            ['money_everyday', 'default', 'value' => $this->getLastMoneyValue('money_everyday')],
+            ['money_medfond', 'default', 'value' => $this->getLastMoneyValue('money_medfond')],
+            ['money_long_clothes', 'default', 'value' => $this->getLastMoneyValue('money_long_clothes')],
+            ['money_long_gifts', 'default', 'value' => $this->getLastMoneyValue('money_long_gifts')],
+            ['money_long_reserves', 'default', 'value' => $this->getLastMoneyValue('money_long_reserves')],
+            ['money_long_deposits', 'default', 'value' => $this->getLastMoneyValue('money_long_deposits')],
+            ['money_credits', 'default', 'value' => $this->getLastMoneyValue('money_credits')],
             [['last_update_date'], 'safe'],
         ];
     }
@@ -56,5 +64,30 @@ class Wallet extends \yii\db\ActiveRecord
             'money_credits' => 'Money Credits',
             'last_update_date' => 'Last Update Date',
         ];
+    }
+
+    public function beforeSave($insert)
+    {
+        $this->last_update_date = new Expression('NOW()');
+        $this->money_all = array_sum([
+            $this->money_credits,
+            $this->money_everyday,
+            $this->money_medfond,
+            $this->money_long_clothes,
+            $this->money_long_gifts,
+            $this->money_long_reserves,
+            $this->money_long_deposits
+        ]);
+        return true;
+    }
+
+    private function getLastMoneyValue(string $fieldName): int
+    {
+        $lastEntry = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
+        if (!$lastEntry instanceof Wallet) {
+            return 0;
+        }
+
+        return $lastEntry->{$fieldName};
     }
 }

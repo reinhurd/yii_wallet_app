@@ -12,8 +12,6 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'money_all')->textInput() ?>
-
     <?= $form->field($model, 'money_everyday')->textInput() ?>
 
     <?= $form->field($model, 'money_medfond')->textInput() ?>
@@ -27,8 +25,6 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'money_long_deposits')->textInput() ?>
 
     <?= $form->field($model, 'money_credits')->textInput() ?>
-
-    <?= $form->field($model, 'last_update_date')->textInput() ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

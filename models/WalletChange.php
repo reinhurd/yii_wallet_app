@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\base\UnknownPropertyException;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "wallet_change".
@@ -50,5 +52,33 @@ class WalletChange extends \yii\db\ActiveRecord
             'comment' => 'Comment',
             'created_at' => 'Created At',
         ];
+    }
+
+    public function beforeSave($insert)
+    {
+        //todo replace in component - change wallet value
+        $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
+        if (!$lastWallet instanceof Wallet) {
+            return false;
+        }
+        try {
+            $entity_name = $this->entity_name;
+
+            $changedValue = $lastWallet->{$entity_name};
+            $newWallet = new Wallet();
+            $newWallet->attributes = $lastWallet->attributes;
+            $newWallet->{$entity_name} = $changedValue + $this->change_value;
+        } catch (UnknownPropertyException $exception) {
+            return false;
+        }
+
+        if (!$newWallet->save()) {
+            return false;
+        }
+
+        $this->wallet_id = $newWallet->id;
+        $this->created_at = new Expression('NOW()');
+
+        return true;
     }
 }

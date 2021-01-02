@@ -14,13 +14,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'entity_name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'wallet_id')->textInput() ?>
-
     <?= $form->field($model, 'change_value')->textInput() ?>
 
     <?= $form->field($model, 'comment')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'created_at')->textInput() ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
