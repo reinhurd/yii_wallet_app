@@ -33,6 +33,7 @@ class WalletChange extends \yii\db\ActiveRecord
     {
         return [
             [['wallet_id', 'change_value'], 'integer'],
+            [['entity_name', 'change_value'], 'required'],
             [['created_at'], 'safe'],
             [['entity_name'], 'string', 'max' => 100],
             [['comment'], 'string', 'max' => 1000],

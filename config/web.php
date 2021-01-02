@@ -51,7 +51,8 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                'GET wapi' => 'wapi/get-last-wallet-info'
+                'GET wapi' => 'wapi/get-last-wallet-info',
+                'GET wapi/set-wallet-change' => 'wapi/set-wallet-change',
             ],
         ],
         

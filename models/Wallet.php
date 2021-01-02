@@ -21,17 +21,32 @@ use yii\db\Expression;
  */
 class Wallet extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
+    const MONEY_EVERYDAY = 1;
+    const MONEY_MEDFOND = 2;
+    const MONEY_LONG_CLOTHES = 3;
+    const MONEY_LONG_GIFTS = 4;
+    const MONEY_LONG_RESERVES = 5;
+    const MONEY_LONG_DEPOSITS = 6;
+    const MONEY_CREDITS = 7;
+
     public static function tableName()
     {
         return 'wallet';
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    public static function getFieldByCode()
+    {
+        return [
+            self::MONEY_EVERYDAY => 'money_everyday',
+            self::MONEY_MEDFOND => 'money_medfond',
+            self::MONEY_LONG_CLOTHES => 'money_long_clothes',
+            self::MONEY_LONG_GIFTS => 'money_long_gifts',
+            self::MONEY_LONG_RESERVES => 'money_long_reserves',
+            self::MONEY_LONG_DEPOSITS => 'money_long_deposits',
+            self::MONEY_CREDITS => 'money_credits'
+        ];
+    }
+
     public function rules()
     {
         return [
@@ -47,9 +62,6 @@ class Wallet extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
