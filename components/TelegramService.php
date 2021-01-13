@@ -2,7 +2,9 @@
 
 namespace app\components;
 
+use app\models\Wallet;
 use Yii;
+use yii\base\InvalidArgumentException;
 
 class TelegramService
 {
@@ -32,5 +34,24 @@ class TelegramService
         curl_close($ch);
 
         return $output;
+    }
+
+    public function parseCommand(string $text): array
+    {
+        if ($text === TelegramService::COMMAND_HELP) {
+            $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
+            $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
+            $this->sendMessage($message);
+
+            throw new InvalidArgumentException();
+        }
+
+        $array = explode(' ', trim($text));
+        if (count($array) !== 3) {
+            $this->sendMessage('Нужно три слова');
+            throw new InvalidArgumentException();
+        }
+
+        return $array;
     }
 }

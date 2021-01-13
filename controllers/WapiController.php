@@ -34,7 +34,7 @@ class WapiController extends ActiveController
     {
         $message = Yii::$app->request->post('message');
         try {
-            $params = $this->parseCommand($message['text']);
+            $params = $this->telegramService->parseCommand($message['text']);
 
             $changeValue = $params[0];
             $entityCode = $params[1];
@@ -70,25 +70,10 @@ class WapiController extends ActiveController
     }
 
     /*
-     * todo вынести в сервис
+     * todo method to set wallet values globally
      */
-    private function parseCommand(string $text): array
+    public function actionResetWallet()
     {
-        if ($text === TelegramService::COMMAND_HELP) {
-            $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
-            $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
-            $this->telegramService->sendMessage($message);
 
-            throw new InvalidArgumentException();
-        }
-
-        $array = explode(' ', trim($text));
-        if (count($array) !== 3) {
-            $this->telegramService->sendMessage('Нужно три слова');
-            throw new InvalidArgumentException();
-        }
-
-        return $array;
     }
 }
-
