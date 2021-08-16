@@ -14,9 +14,7 @@ class TelegramService
     {
         $url = Yii::$app->params['telegramFinanceBot'] . "sendmessage";
 
-        // create curl resource
         $ch = curl_init();
-        // set url
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS,
@@ -27,10 +25,8 @@ class TelegramService
         );
         //return the transfer as a string
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        // $output contains the output string
         $output = curl_exec($ch);
 
-        // close curl resource to free up system resources
         curl_close($ch);
 
         return $output;
@@ -38,13 +34,7 @@ class TelegramService
 
     public function parseCommand(string $text): array
     {
-        if ($text === TelegramService::COMMAND_HELP) {
-            $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
-            $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
-            $this->sendMessage($message);
 
-            throw new InvalidArgumentException();
-        }
 
         $array = explode(' ', trim($text));
         if (count($array) !== 3) {

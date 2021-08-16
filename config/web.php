@@ -52,7 +52,7 @@ $config = [
             'showScriptName' => false,
             'rules' => [
                 'GET wapi' => 'wapi/get-last-wallet-info',
-                'POST wapi/set-wallet-change' => 'wapi/set-wallet-change',
+                'POST wapi/telegram' => 'wapi/telegram',
             ],
         ],
         
