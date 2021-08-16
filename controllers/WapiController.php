@@ -39,7 +39,7 @@ class WapiController extends ActiveController
         $message = Yii::$app->request->post('message');
         try {
             $messageText = $message['text'];
-            $params = $this->telegramService->parseCommand($messageText);
+            $params = $this->parseCommand($messageText);
             if ($messageText === TelegramService::COMMAND_HELP) {
                 $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
                 $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
@@ -91,5 +91,16 @@ class WapiController extends ActiveController
     public function actionResetWallet()
     {
 
+    }
+
+    private function parseCommand(string $text): array
+    {
+        $array = explode(' ', trim($text));
+        if (count($array) !== 3) {
+            $this->telegramService->sendMessage('Нужно три слова');
+            throw new InvalidArgumentException();
+        }
+
+        return $array;
     }
 }

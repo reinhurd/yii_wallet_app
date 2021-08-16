@@ -31,17 +31,4 @@ class TelegramService
 
         return $output;
     }
-
-    public function parseCommand(string $text): array
-    {
-
-
-        $array = explode(' ', trim($text));
-        if (count($array) !== 3) {
-            $this->sendMessage('Нужно три слова');
-            throw new InvalidArgumentException();
-        }
-
-        return $array;
-    }
 }
