@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 use yii\db\Expression;
 
 /**
@@ -19,7 +19,7 @@ use yii\db\Expression;
  * @property int|null $money_credits
  * @property string|null $last_update_date
  */
-class Wallet extends \yii\db\ActiveRecord
+class Wallet extends ActiveRecord
 {
     const MONEY_EVERYDAY = 1;
     const MONEY_MEDFOND = 2;
