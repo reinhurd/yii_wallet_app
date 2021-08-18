@@ -15,7 +15,9 @@ class WapiController extends ActiveController
     /** @var Wallet|null */
     private $lastWallet;
     private $telegramService;
+    private const COMMAND_HELP = '/help';
     private const COMMAND_GET_INFO_ABOUT_WALLET = '/info';
+    private const COMMAND_RESET = '/reset';
 
     public function __construct($id, $module, TelegramService $telegramService, $config = [])
     {
@@ -41,7 +43,7 @@ class WapiController extends ActiveController
             $messageText = $message['text'];
 
             switch ($messageText) {
-                case TelegramService::COMMAND_HELP:
+                case self::COMMAND_HELP:
                     $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
                     $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
                     $this->telegramService->sendMessage($message);
@@ -52,6 +54,8 @@ class WapiController extends ActiveController
                     $this->telegramService->sendMessage($message);
 
                     return true;
+                case self::COMMAND_RESET:
+                    //todo make reset method here and add parse array to set new value to funds
             }
 
             //if all OK
@@ -87,14 +91,6 @@ class WapiController extends ActiveController
         $this->telegramService->sendMessage($message);
 
         return $newWalletChange;
-    }
-
-    /*
-     * todo method to set wallet values globally
-     */
-    public function actionResetWallet()
-    {
-
     }
 
     private function parseCommand(string $text): array

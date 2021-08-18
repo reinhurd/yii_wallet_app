@@ -8,18 +8,23 @@ use yii\base\InvalidArgumentException;
 
 class TelegramService
 {
-    const COMMAND_HELP = '/help';
+    private $chatId;
+    private $urlTelegramBotSendMethod;
+
+    public function __construct()
+    {
+        $this->chatId = Yii::$app->params['telebotChatId'];
+        $this->urlTelegramBotSendMethod = Yii::$app->params['telegramFinanceBot'] . "sendmessage";
+    }
 
     public function sendMessage($text)
     {
-        $url = Yii::$app->params['telegramFinanceBot'] . "sendmessage";
-
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_URL, $this->urlTelegramBotSendMethod);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS,
             http_build_query(array(
-                'chat_id' => Yii::$app->params['telebotChatId'],
+                'chat_id' => $this->chatId,
                 'text' => $text
             ))
         );
