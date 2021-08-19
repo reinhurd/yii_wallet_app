@@ -58,7 +58,7 @@ class WapiController extends ActiveController
 
                     return true;
                 case self::COMMAND_GET_INFO_ABOUT_WALLET:
-                    $message = 'Остаток денег на счете = ' . $this->lastWallet->money_all;
+                    $message = 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
                     $this->telegramService->sendMessage($message);
 
                     return true;
@@ -85,6 +85,8 @@ class WapiController extends ActiveController
                 throw new InvalidArgumentException();
             }
         } catch (InvalidArgumentException $exception) {
+            $message = 'Error!';
+            $this->telegramService->sendMessage($message);
             return true;
         }
 
