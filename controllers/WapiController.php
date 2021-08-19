@@ -1,6 +1,7 @@
 <?php
 namespace app\controllers;
 
+use app\components\WalletService;
 use app\models\Wallet;
 use app\models\WalletChange;
 use app\components\TelegramService;
@@ -15,16 +16,23 @@ class WapiController extends ActiveController
     /** @var Wallet|null */
     private $lastWallet;
     private $telegramService;
+    private $walletService;
     private const COMMAND_HELP = '/help';
     private const COMMAND_GET_INFO_ABOUT_WALLET = '/info';
     private const COMMAND_RESET = '/reset';
 
-    public function __construct($id, $module, TelegramService $telegramService, $config = [])
-    {
+    public function __construct(
+        $id,
+        $module,
+        TelegramService $telegramService,
+        WalletService $walletService,
+        $config = []
+    ) {
         parent::__construct($id, $module, $config);
         $this->lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
         Yii::$app->response->format = Response::FORMAT_JSON;
         $this->telegramService = $telegramService;
+        $this->walletService = $walletService;
     }
 
     //todo make new endpoint access through telegram webhooks
@@ -55,7 +63,11 @@ class WapiController extends ActiveController
 
                     return true;
                 case self::COMMAND_RESET:
-                    //todo make reset method here and add parse array to set new value to funds
+                    $this->walletService->resetWallets();
+                    $message = 'Все кошельки очищены';
+                    $this->telegramService->sendMessage($message);
+                    //todo make fill cleared wallets from one message
+                    return true;
             }
 
             //if all OK

@@ -2,9 +2,7 @@
 
 namespace app\components;
 
-use app\models\Wallet;
 use Yii;
-use yii\base\InvalidArgumentException;
 
 class TelegramService
 {
