@@ -94,7 +94,7 @@ class WapiController extends ActiveController
                 throw new InvalidArgumentException();
             }
         } catch (InvalidArgumentException|\Exception $exception) {
-            $message = 'Error!';
+            $message = 'Error!' . $exception->getTraceAsString();
             $this->telegramService->sendMessage($message);
             return true;
         }
@@ -163,7 +163,7 @@ class WapiController extends ActiveController
                 throw new InvalidArgumentException();
             }
         } catch (InvalidArgumentException|\Exception $exception) {
-            $message = 'Error!';
+            $message = 'Error!' . $exception->getTraceAsString();
             $this->telegramService->sendMessage($message);
             return true;
         }
