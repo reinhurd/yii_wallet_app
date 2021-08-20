@@ -93,7 +93,7 @@ class WapiController extends ActiveController
             if ($entityName === null) {
                 throw new InvalidArgumentException();
             }
-        } catch (InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException|\Exception $exception) {
             $message = 'Error!';
             $this->telegramService->sendMessage($message);
             return true;
@@ -162,7 +162,7 @@ class WapiController extends ActiveController
             if ($entityName === null) {
                 throw new InvalidArgumentException();
             }
-        } catch (InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException|\Exception $exception) {
             $message = 'Error!';
             $this->telegramService->sendMessage($message);
             return true;
