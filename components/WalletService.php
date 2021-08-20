@@ -20,6 +20,9 @@ class WalletService
         $newWallet = new Wallet();
         $i = 1; //not use 0 value - its command word
         foreach ($newWallet->getAttributes() as $name => $value) {
+            if (!isset(Wallet::getFieldByCode()[$i])) {
+                continue;
+            }
             if ($name !== Wallet::getFieldByCode()[$i]) {
                 continue;
             }

@@ -93,8 +93,8 @@ class WapiController extends ActiveController
             if ($entityName === null) {
                 throw new InvalidArgumentException();
             }
-        } catch (InvalidArgumentException $exception) {
-            $message = 'Error!';
+        } catch (InvalidArgumentException|\Exception $exception) {
+            $message = 'Error!' . $exception->getMessage() . $exception->getTraceAsString();
             $this->telegramService->sendMessage($message);
             return true;
         }
