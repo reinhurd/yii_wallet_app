@@ -125,7 +125,7 @@ class WapiController extends ActiveController
                 $arrayValidCount = 3;
                 break;
             case self::COMMAND_RESET_NEW:
-                $arrayValidCount = 7;
+                $arrayValidCount = 8;
                 break;
         }
         $currentCount = count($array);
