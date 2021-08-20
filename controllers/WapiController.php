@@ -70,7 +70,7 @@ class WapiController extends ActiveController
                     $this->telegramService->sendMessage($message);
 
                     return true;
-                case self::COMMAND_RESET_NEW:
+                case strpos($messageText, self::COMMAND_RESET_NEW) !== false:
                     $params = $this->parseCommand($messageText, self::COMMAND_RESET_NEW);
                     $this->walletService->setNewWalletToEmptyBase($params);
                     $message = 'Все кошельки очищены и заданы новые значения';
