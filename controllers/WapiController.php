@@ -116,6 +116,75 @@ class WapiController extends ActiveController
         return $newWalletChange;
     }
 
+    //debug mode on
+    public function actionTelegrams()
+    {
+        $messageText = Yii::$app->request->get('message');
+        try {
+            switch ($messageText) {
+                case self::COMMAND_HELP:
+                    $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
+                    $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
+                    $this->telegramService->sendMessage($message);
+
+                    return true;
+                case self::COMMAND_GET_INFO_ABOUT_WALLET:
+                    $message = 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
+                    $this->telegramService->sendMessage($message);
+
+                    return true;
+                case self::COMMAND_RESET:
+                    $this->walletService->resetWallets();
+                    $message = 'Все кошельки очищены';
+                    $this->telegramService->sendMessage($message);
+
+                    return true;
+                case strpos($messageText, self::COMMAND_RESET_NEW) !== false:
+                    $params = $this->parseCommand($messageText, self::COMMAND_RESET_NEW);
+                    $this->walletService->setNewWalletToEmptyBase($params);
+                    $message = 'Все кошельки очищены и заданы новые значения';
+                    $this->telegramService->sendMessage($message);
+
+                    return true;
+            }
+
+            //if all OK
+            $params = $this->parseCommand($messageText);
+            $changeValue = $params[0];
+            $entityCode = $params[1];
+            $comment = $params[2];
+
+            if (!isset($entityCode) || !isset($changeValue)) {
+                throw new InvalidArgumentException();
+            }
+
+            $entityName = Wallet::getFieldByCode()[(int)$entityCode] ?? null;
+            if ($entityName === null) {
+                throw new InvalidArgumentException();
+            }
+        } catch (InvalidArgumentException $exception) {
+            $message = 'Error!';
+            $this->telegramService->sendMessage($message);
+            return true;
+        }
+
+        $newWalletChange = new WalletChange();
+        $newWalletChange->entity_name = $entityName;
+        $newWalletChange->change_value = $changeValue;
+        $newWalletChange->comment = $comment;
+
+        if (!$newWalletChange->save()) {
+            print_r($newWalletChange->getErrors());
+            return true;
+        }
+        $lastLastWallet = Wallet::find()->where(['id' => $newWalletChange->wallet_id])->one();
+        $message = 'Success'  . $newWalletChange->id . ' ' . $newWalletChange->entity_name . ' New total sum' . $lastLastWallet->money_all;
+
+        $this->telegramService->sendMessage($message);
+
+        return $newWalletChange;
+    }
+
     private function parseCommand(string $text, string $operationType = self::COMMAND_DEFAULT): array
     {
         $arrayValidCount = 0;
