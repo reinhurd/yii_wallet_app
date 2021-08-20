@@ -120,8 +120,6 @@ class WapiController extends ActiveController
     public function actionTelegrams()
     {
         $messageText = Yii::$app->request->get('message');
-        var_dump($messageText);
-        die();
         try {
             switch ($messageText) {
                 case self::COMMAND_HELP:
