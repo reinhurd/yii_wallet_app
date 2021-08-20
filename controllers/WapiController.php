@@ -20,6 +20,8 @@ class WapiController extends ActiveController
     private const COMMAND_HELP = '/help';
     private const COMMAND_GET_INFO_ABOUT_WALLET = '/info';
     private const COMMAND_RESET = '/reset';
+    private const COMMAND_RESET_NEW = '/reset_new';
+    private const COMMAND_DEFAULT = '/default';
 
     public function __construct(
         $id,
@@ -66,7 +68,14 @@ class WapiController extends ActiveController
                     $this->walletService->resetWallets();
                     $message = 'Все кошельки очищены';
                     $this->telegramService->sendMessage($message);
-                    //todo make fill cleared wallets from one message
+
+                    return true;
+                case self::COMMAND_RESET_NEW:
+                    $params = $this->parseCommand($messageText, self::COMMAND_RESET_NEW);
+                    $this->walletService->setNewWalletToEmptyBase($params);
+                    $message = 'Все кошельки очищены и заданы новые значения';
+                    $this->telegramService->sendMessage($message);
+
                     return true;
             }
 
@@ -107,11 +116,21 @@ class WapiController extends ActiveController
         return $newWalletChange;
     }
 
-    private function parseCommand(string $text): array
+    private function parseCommand(string $text, string $operationType = self::COMMAND_DEFAULT): array
     {
+        $arrayValidCount = 0;
         $array = explode(' ', trim($text));
-        if (count($array) !== 3) {
-            $this->telegramService->sendMessage('Нужно три слова');
+        switch ($operationType) {
+            case self::COMMAND_DEFAULT:
+                $arrayValidCount = 3;
+                break;
+            case self::COMMAND_RESET_NEW:
+                $arrayValidCount = 7;
+                break;
+        }
+        $currentCount = count($array);
+        if ($currentCount !== $arrayValidCount) {
+            $this->telegramService->sendMessage("Нужно точное количество ($arrayValidCount) слов. Прислано: $currentCount");
             throw new InvalidArgumentException();
         }
 

@@ -14,6 +14,23 @@ class WalletService
         WalletChange::deleteAll();
     }
 
+    public function setNewWalletToEmptyBase(array $newWalletValues): void
+    {
+        $this->resetWallets();
+        $newWallet = new Wallet();
+        $i = 1; //not use 0 value - its command word
+        foreach ($newWallet->getAttributes() as $name => $value) {
+            if ($name !== Wallet::getFieldByCode()[$i]) {
+                continue;
+            }
+            $newWallet->{$name} = $newWalletValues[$i];
+            $i++;
+        }
+        if (!$newWallet->save()) {
+            throw new InvalidArgumentException();
+        }
+    }
+
     public function getLastWalletInfo(): ?int
     {
         $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
@@ -23,5 +40,4 @@ class WalletService
 
         return $lastWallet->money_all;
     }
-
 }
