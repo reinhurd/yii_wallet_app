@@ -6,6 +6,9 @@ use app\models\Wallet;
 use app\models\WalletChange;
 use yii\base\InvalidArgumentException;
 
+/**
+ * Viewing Wallet and updating funds in it by some secondary services
+ */
 class WalletService
 {
     public function resetWallets(): void

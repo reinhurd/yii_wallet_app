@@ -5,6 +5,7 @@ use app\components\WalletService;
 use app\models\Wallet;
 use app\models\WalletChange;
 use app\components\TelegramService;
+use Exception;
 use yii\base\InvalidArgumentException;
 use yii\rest\ActiveController;
 use yii\web\Response;
@@ -93,7 +94,7 @@ class WapiController extends ActiveController
             if ($entityName === null) {
                 throw new InvalidArgumentException();
             }
-        } catch (InvalidArgumentException|\Exception $exception) {
+        } catch (InvalidArgumentException|Exception $exception) {
             $message = 'Error!' . $exception->getMessage() . $exception->getTraceAsString();
             $this->telegramService->sendMessage($message);
             return true;
@@ -105,8 +106,8 @@ class WapiController extends ActiveController
         $newWalletChange->comment = $comment;
 
         if (!$newWalletChange->save()) {
-            print_r($newWalletChange->getErrors());
-            return true;
+            //log exception
+            return false;
         }
         $lastLastWallet = Wallet::find()->where(['id' => $newWalletChange->wallet_id])->one();
         $message = 'Success'  . $newWalletChange->id . ' ' . $newWalletChange->entity_name . ' New total sum' . $lastLastWallet->money_all;
