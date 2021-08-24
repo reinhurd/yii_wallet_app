@@ -5,6 +5,7 @@ namespace app\components;
 use app\models\Wallet;
 use app\models\WalletChange;
 use yii\base\InvalidArgumentException;
+use yii\base\UnknownPropertyException;
 
 /**
  * Viewing Wallet and updating funds in it by some secondary services
@@ -15,6 +16,30 @@ class WalletService
     {
         Wallet::deleteAll();
         WalletChange::deleteAll();
+    }
+
+    public function saveWalletChange(WalletChange $walletChange): ?Wallet
+    {
+        $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
+        if (!$lastWallet instanceof Wallet) {
+            return null;
+        }
+        try {
+            $entity_name = $walletChange->entity_name;
+
+            $changedValue = $lastWallet->{$entity_name};
+            $newWallet = new Wallet();
+            $newWallet->attributes = $lastWallet->attributes;
+            $newWallet->{$entity_name} = $changedValue + $walletChange->change_value;
+        } catch (UnknownPropertyException $exception) {
+            return null;
+        }
+
+        if (!$newWallet->save()) {
+            return null;
+        }
+
+        return $newWallet;
     }
 
     public function setNewWalletToEmptyBase(array $newWalletValues): void

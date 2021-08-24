@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\components\WalletService;
 use Yii;
 use yii\base\UnknownPropertyException;
 use yii\db\Expression;
@@ -57,23 +58,10 @@ class WalletChange extends \yii\db\ActiveRecord
 
     public function beforeSave($insert)
     {
-        //todo replace in component - change wallet value
-        $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
-        if (!$lastWallet instanceof Wallet) {
-            return false;
-        }
-        try {
-            $entity_name = $this->entity_name;
-
-            $changedValue = $lastWallet->{$entity_name};
-            $newWallet = new Wallet();
-            $newWallet->attributes = $lastWallet->attributes;
-            $newWallet->{$entity_name} = $changedValue + $this->change_value;
-        } catch (UnknownPropertyException $exception) {
-            return false;
-        }
-
-        if (!$newWallet->save()) {
+        /** @var WalletService $walletService */
+        $walletService = Yii::createObject(WalletService::class);
+        $newWallet = $walletService->saveWalletChange($this);
+        if (!$newWallet instanceof Wallet) {
             return false;
         }
 
