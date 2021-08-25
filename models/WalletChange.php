@@ -60,7 +60,7 @@ class WalletChange extends \yii\db\ActiveRecord
     {
         /** @var WalletService $walletService */
         $walletService = Yii::createObject(WalletService::class);
-        $newWallet = $walletService->saveWalletChange($this);
+        $newWallet = $walletService->beforeSaveWalletChange($this);
         if (!$newWallet instanceof Wallet) {
             return false;
         }

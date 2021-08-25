@@ -100,15 +100,11 @@ class WapiController extends ActiveController
             return true;
         }
 
-        $newWalletChange = new WalletChange();
-        $newWalletChange->entity_name = $entityName;
-        $newWalletChange->change_value = $changeValue;
-        $newWalletChange->comment = $comment;
-
-        if (!$newWalletChange->save()) {
-            //log exception
+        $newWalletChange = $this->walletService->createWalletChange($entityName, $changeValue, $comment);
+        if (!$newWalletChange instanceof WalletChange) {
             return false;
         }
+
         $lastLastWallet = Wallet::find()->where(['id' => $newWalletChange->wallet_id])->one();
         $message = 'Success'  . $newWalletChange->id . ' ' . $newWalletChange->entity_name . ' New total sum' . $lastLastWallet->money_all;
 

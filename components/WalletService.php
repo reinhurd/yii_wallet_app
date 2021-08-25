@@ -18,7 +18,19 @@ class WalletService
         WalletChange::deleteAll();
     }
 
-    public function saveWalletChange(WalletChange $walletChange): ?Wallet
+    public function createWalletChange(string $entityName, $changeValue, string $comment): ?WalletChange
+    {
+        $newWalletChange = new WalletChange();
+        $newWalletChange->entity_name = $entityName;
+        $newWalletChange->change_value = $changeValue;
+        $newWalletChange->comment = $comment;
+
+        if (!$newWalletChange->save()) {
+            return null;
+        }
+    }
+
+    public function beforeSaveWalletChange(WalletChange $walletChange): ?Wallet
     {
         $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
         if (!$lastWallet instanceof Wallet) {
