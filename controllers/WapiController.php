@@ -97,6 +97,7 @@ class WapiController extends ActiveController
         } catch (InvalidArgumentException|Exception $exception) {
             $message = 'Error!' . $exception->getMessage() . $exception->getTraceAsString();
             $this->telegramService->sendMessage($message);
+
             return true;
         }
 
@@ -106,7 +107,7 @@ class WapiController extends ActiveController
         }
 
         $lastLastWallet = Wallet::find()->where(['id' => $newWalletChange->wallet_id])->one();
-        $message = 'Success'  . $newWalletChange->id . ' ' . $newWalletChange->entity_name . ' New total sum' . $lastLastWallet->money_all;
+        $message = "Success {$newWalletChange->id} {$newWalletChange->entity_name} New total sum: {$lastLastWallet->money_all}";
 
         $this->telegramService->sendMessage($message);
 

@@ -13,7 +13,7 @@ class BudgetService
     public function countMoneyForDayByFunds(Wallet $wallet): int
     {
         return array_sum([
-            $wallet->money_credits,
+            $wallet->money_credits, //todo change credits work scheme
             $wallet->money_everyday,
             $wallet->money_medfond,
             $wallet->money_long_clothes,

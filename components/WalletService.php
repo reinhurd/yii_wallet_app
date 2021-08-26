@@ -39,8 +39,10 @@ class WalletService
         try {
             $entity_name = $walletChange->entity_name;
 
+            //we get old funds and make sum with new value from wallet change
             $changedValue = $lastWallet->{$entity_name};
             $newWallet = new Wallet();
+            //todo make something with credits and add some financial helpers here
             $newWallet->attributes = $lastWallet->attributes;
             $newWallet->{$entity_name} = $changedValue + $walletChange->change_value;
         } catch (UnknownPropertyException $exception) {
