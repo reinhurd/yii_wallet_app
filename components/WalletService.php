@@ -28,6 +28,8 @@ class WalletService
         if (!$newWalletChange->save()) {
             return null;
         }
+
+        return $newWalletChange;
     }
 
     public function beforeSaveWalletChange(WalletChange $walletChange): ?Wallet

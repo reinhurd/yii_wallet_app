@@ -1,6 +1,7 @@
 <?php
 namespace app\controllers;
 
+use app\components\BudgetService;
 use app\components\WalletService;
 use app\models\Wallet;
 use app\models\WalletChange;
@@ -16,6 +17,7 @@ class WapiController extends ActiveController
     public $modelClass = 'app\models\Wallet';
     /** @var Wallet|null */
     private $lastWallet;
+    private $budgetService;
     private $telegramService;
     private $walletService;
     private const COMMAND_HELP = '/help';
@@ -23,10 +25,12 @@ class WapiController extends ActiveController
     private const COMMAND_RESET = '/reset';
     private const COMMAND_RESET_NEW = '/reset_new';
     private const COMMAND_DEFAULT = '/default';
+    private const COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY = '/remainM';
 
     public function __construct(
         $id,
         $module,
+        BudgetService $budgetService,
         TelegramService $telegramService,
         WalletService $walletService,
         $config = []
@@ -34,6 +38,7 @@ class WapiController extends ActiveController
         parent::__construct($id, $module, $config);
         $this->lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
         Yii::$app->response->format = Response::FORMAT_JSON;
+        $this->budgetService = $budgetService;
         $this->telegramService = $telegramService;
         $this->walletService = $walletService;
     }
@@ -62,6 +67,11 @@ class WapiController extends ActiveController
                     return true;
                 case self::COMMAND_GET_INFO_ABOUT_WALLET:
                     $message = 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
+                    $this->telegramService->sendMessage($message);
+
+                    return true;
+                case self::COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY:
+                    $message = 'Денег каждый день на текущий месяц = ' . $this->budgetService->getMoneyForCurrentMonth();
                     $this->telegramService->sendMessage($message);
 
                     return true;

@@ -22,4 +22,20 @@ class BudgetService
             $wallet->money_long_deposits
         ]);
     }
+
+    public function getMoneyForCurrentMonth(): float
+    {
+        $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
+        $timestamp = date('Y-m-d');
+        $daysInMonth = (int)date('t', strtotime($timestamp));
+        $thisDayInMonth = (int)date('j', strtotime($timestamp));
+        $daysRemaining = $daysInMonth - $thisDayInMonth;
+
+        return round($lastWallet->money_everyday / $daysRemaining);
+    }
+
+    public function getSalary()
+    {
+        //todo create method about get salary and divide it to funds
+    }
 }
