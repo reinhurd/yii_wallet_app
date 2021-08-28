@@ -83,10 +83,9 @@ class WapiController extends ActiveController
                     $this->telegramService->sendMessage($message);
 
                     return true;
-                case self::COMMAND_SALARY:
+                case strpos($messageText, self::COMMAND_SALARY) !== false:
                     $params = $this->parseCommand($messageText, self::COMMAND_SALARY);
                     $salary = $params[1];
-                    var_dump();
                     $this->budgetService->setSalary($salary);
                     $message = 'Зарплата распределена по фонтам.';
                     $message .= 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
