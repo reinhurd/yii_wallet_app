@@ -26,6 +26,7 @@ class WapiController extends ActiveController
     private const COMMAND_RESET_NEW = '/reset_new';
     private const COMMAND_DEFAULT = '/default';
     private const COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY = '/remainM';
+    private const COMMAND_SALARY = '/salary';
 
     public function __construct(
         $id,
@@ -78,6 +79,15 @@ class WapiController extends ActiveController
                 case self::COMMAND_RESET:
                     $this->walletService->resetWallets();
                     $message = 'Все кошельки очищены';
+                    $this->telegramService->sendMessage($message);
+
+                    return true;
+                case self::COMMAND_SALARY:
+                    $params = $this->parseCommand($messageText);
+                    $salary = $params[1];
+                    $this->budgetService->setSalary($salary);
+                    $message = 'Зарплата распределена по фонтам.';
+                    $message .= 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
                     $this->telegramService->sendMessage($message);
 
                     return true;
@@ -134,6 +144,9 @@ class WapiController extends ActiveController
                 break;
             case self::COMMAND_RESET_NEW:
                 $arrayValidCount = 8;
+                break;
+            case self::COMMAND_SALARY:
+                $arrayValidCount = 2;
                 break;
         }
         $currentCount = count($array);

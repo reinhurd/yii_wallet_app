@@ -22,6 +22,7 @@ use yii\db\Expression;
  */
 class Wallet extends ActiveRecord
 {
+    //todo make const for every field name
     const MONEY_EVERYDAY = 1;
     const MONEY_MEDFOND = 2;
     const MONEY_LONG_CLOTHES = 3;
