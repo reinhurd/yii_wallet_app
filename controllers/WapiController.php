@@ -57,9 +57,10 @@ class WapiController extends ActiveController
     {
         $message = Yii::$app->request->post('message');
         try {
-            $messageText = $message['text'];
-            var_dump($messageText);
+            var_dump($message);
             die();
+            $messageText = $message['text'];
+
 
             switch ($messageText) {
                 case self::COMMAND_HELP:
