@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\components\BudgetService;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 
@@ -21,6 +22,7 @@ use yii\db\Expression;
  */
 class Wallet extends ActiveRecord
 {
+    //todo make const for every field name
     const MONEY_EVERYDAY = 1;
     const MONEY_MEDFOND = 2;
     const MONEY_LONG_CLOTHES = 3;
@@ -80,16 +82,11 @@ class Wallet extends ActiveRecord
 
     public function beforeSave($insert)
     {
+        /** @var BudgetService $budgetService */
+        $budgetService = \Yii::createObject(BudgetService::class);
         $this->last_update_date = new Expression('NOW()');
-        $this->money_all = array_sum([
-            $this->money_credits,
-            $this->money_everyday,
-            $this->money_medfond,
-            $this->money_long_clothes,
-            $this->money_long_gifts,
-            $this->money_long_reserves,
-            $this->money_long_deposits
-        ]);
+        $this->money_all = $budgetService->countMoneyForDayByFunds($this);
+
         return true;
     }
 

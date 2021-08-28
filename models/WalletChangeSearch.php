@@ -11,9 +11,6 @@ use app\models\WalletChange;
  */
 class WalletChangeSearch extends WalletChange
 {
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -22,9 +19,6 @@ class WalletChangeSearch extends WalletChange
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function scenarios()
     {
         // bypass scenarios() implementation in the parent class

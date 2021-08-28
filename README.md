@@ -15,7 +15,7 @@ Setting for telegram bot
 Отправка сообщений в бот - через sendmessage и ПОСТ-параметры
 
 ###RoadMap
-1. Make reset method to clear wallet and set new param
+~~1. Make reset method to clear wallet and set new param~~
 2. More funds fields
 3. Make Services in controller
 4. Automatically count available money for day
