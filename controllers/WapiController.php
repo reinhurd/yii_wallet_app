@@ -55,12 +55,10 @@ class WapiController extends ActiveController
      */
     public function actionTelegram()
     {
-        $message = Yii::$app->request->post('message');
+        $message = Yii::$app->request->get('message');
         try {
-            var_dump($message);
-            die();
-            $messageText = $message['text'];
-
+            //$messageText = $message['text'];
+            $messageText = $message;
 
             switch ($messageText) {
                 case self::COMMAND_HELP:
