@@ -58,6 +58,8 @@ class WapiController extends ActiveController
         $message = Yii::$app->request->post('message');
         try {
             $messageText = $message['text'];
+            var_dump($messageText);
+            die();
 
             switch ($messageText) {
                 case self::COMMAND_HELP:
@@ -85,6 +87,7 @@ class WapiController extends ActiveController
                 case self::COMMAND_SALARY:
                     $params = $this->parseCommand($messageText, self::COMMAND_SALARY);
                     $salary = $params[1];
+                    var_dump();
                     $this->budgetService->setSalary($salary);
                     $message = 'Зарплата распределена по фонтам.';
                     $message .= 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
