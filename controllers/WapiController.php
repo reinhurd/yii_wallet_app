@@ -83,7 +83,7 @@ class WapiController extends ActiveController
 
                     return true;
                 case self::COMMAND_SALARY:
-                    $params = $this->parseCommand($messageText);
+                    $params = $this->parseCommand($messageText, self::COMMAND_SALARY);
                     $salary = $params[1];
                     $this->budgetService->setSalary($salary);
                     $message = 'Зарплата распределена по фонтам.';
