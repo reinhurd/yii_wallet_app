@@ -59,66 +59,35 @@ class WapiController extends ActiveController
         try {
             $messageText = $message['text'];
 
-            switch ($messageText) {
-                case self::COMMAND_HELP:
-                    $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
-                    $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
-                    $this->telegramService->sendMessage($message);
-
-                    return true;
-                case self::COMMAND_GET_INFO_ABOUT_WALLET:
-                    $message = 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
-                    $this->telegramService->sendMessage($message);
-
-                    return true;
-                case self::COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY:
-                    $message = 'Денег каждый день на текущий месяц = ' . $this->budgetService->getMoneyForCurrentMonth();
-                    $this->telegramService->sendMessage($message);
-
-                    return true;
-                case self::COMMAND_RESET:
-                    $this->walletService->resetWallets();
-                    $message = 'Все кошельки очищены';
-                    $this->telegramService->sendMessage($message);
-
-                    return true;
-                case strpos($messageText, self::COMMAND_SALARY) !== false:
-                    $params = $this->parseCommand($messageText, self::COMMAND_SALARY);
-                    $salary = $params[1];
-                    $this->budgetService->setSalary($salary);
-                    $message = 'Зарплата распределена по фонтам.';
-                    $message .= 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
-                    $this->telegramService->sendMessage($message);
-
-                    return true;
-                case strpos($messageText, self::COMMAND_RESET_NEW) !== false:
-                    $params = $this->parseCommand($messageText, self::COMMAND_RESET_NEW);
-                    $this->walletService->setNewWalletToEmptyBase($params);
-                    $message = 'Все кошельки очищены и заданы новые значения';
-                    $this->telegramService->sendMessage($message);
-
-                    return true;
+            if ($this->handleSpecialCommand($messageText)) {
+                return true;
             }
 
-            //if all OK
-            $params = $this->parseCommand($messageText);
-            $changeValue = $params[0];
-            $entityCode = $params[1];
-            $comment = $params[2];
-
-            if (!isset($entityCode) || !isset($changeValue)) {
-                throw new InvalidArgumentException();
-            }
-
-            $entityName = Wallet::getFieldByCode()[(int)$entityCode] ?? null;
-            if ($entityName === null) {
-                throw new InvalidArgumentException();
-            }
+            $newWalletChange = $this->handleCommonChangeWalletFundCommand($messageText);
         } catch (InvalidArgumentException|Exception $exception) {
             $message = 'Error!' . $exception->getMessage() . $exception->getTraceAsString();
             $this->telegramService->sendMessage($message);
 
             return true;
+        }
+
+        return $newWalletChange;
+    }
+
+    private function handleCommonChangeWalletFundCommand(string $messageText): WalletChange
+    {
+        $params = $this->parseCommand($messageText);
+        $changeValue = $params[0];
+        $entityCode = $params[1];
+        $comment = $params[2];
+
+        if (!isset($entityCode) || !isset($changeValue)) {
+            throw new InvalidArgumentException();
+        }
+
+        $entityName = Wallet::getFieldByCode()[(int)$entityCode] ?? null;
+        if ($entityName === null) {
+            throw new InvalidArgumentException();
         }
 
         $newWalletChange = $this->walletService->createWalletChange($entityName, $changeValue, $comment);
@@ -132,6 +101,52 @@ class WapiController extends ActiveController
         $this->telegramService->sendMessage($message);
 
         return $newWalletChange;
+    }
+
+    private function handleSpecialCommand(string $messageText): bool
+    {
+        switch ($messageText) {
+            case self::COMMAND_HELP:
+                $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
+                $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
+                $this->telegramService->sendMessage($message);
+
+                return true;
+            case self::COMMAND_GET_INFO_ABOUT_WALLET:
+                $message = 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
+                $this->telegramService->sendMessage($message);
+
+                return true;
+            case self::COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY:
+                $message = 'Денег каждый день на текущий месяц = ' . $this->budgetService->getMoneyForCurrentMonth();
+                $this->telegramService->sendMessage($message);
+
+                return true;
+            case self::COMMAND_RESET:
+                $this->walletService->resetWallets();
+                $message = 'Все кошельки очищены';
+                $this->telegramService->sendMessage($message);
+
+                return true;
+            case strpos($messageText, self::COMMAND_SALARY) !== false:
+                $params = $this->parseCommand($messageText, self::COMMAND_SALARY);
+                $salary = $params[1];
+                $this->budgetService->setSalary($salary);
+                $message = 'Зарплата распределена по фонтам.';
+                $message .= 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
+                $this->telegramService->sendMessage($message);
+
+                return true;
+            case strpos($messageText, self::COMMAND_RESET_NEW) !== false:
+                $params = $this->parseCommand($messageText, self::COMMAND_RESET_NEW);
+                $this->walletService->setNewWalletToEmptyBase($params);
+                $message = 'Все кошельки очищены и заданы новые значения';
+                $this->telegramService->sendMessage($message);
+
+                return true;
+        }
+
+        return false;
     }
 
     private function parseCommand(string $text, string $operationType = self::COMMAND_DEFAULT): array
