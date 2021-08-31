@@ -57,7 +57,7 @@ class BudgetService
             if (empty($entityName)) {
                 throw new InvalidArgumentException();
             }
-            $changeValue = round($salary * $ruleValue);
+            $changeValue = (int)round($salary * $ruleValue);
             $comment = "Доля от зарплаты {$salary} в размере {$changeValue}";
             $this->walletService->createWalletChange($entityName, $changeValue, $comment);
         }

@@ -77,7 +77,7 @@ class WapiController extends ActiveController
     private function handleCommonChangeWalletFundCommand(string $messageText): WalletChange
     {
         $params = $this->parseCommand($messageText);
-        $changeValue = $params[0];
+        $changeValue = (int)$params[0];
         $entityCode = $params[1];
         $comment = $params[2];
 
@@ -86,13 +86,13 @@ class WapiController extends ActiveController
         }
 
         $entityName = Wallet::getFieldByCode()[(int)$entityCode] ?? null;
-        if ($entityName === null) {
+        if (empty($entityName)) {
             throw new InvalidArgumentException();
         }
 
         $newWalletChange = $this->walletService->createWalletChange($entityName, $changeValue, $comment);
         if (!$newWalletChange instanceof WalletChange) {
-            return false;
+            throw new Exception();
         }
 
         $lastLastWallet = Wallet::find()->where(['id' => $newWalletChange->wallet_id])->one();

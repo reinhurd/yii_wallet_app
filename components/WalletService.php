@@ -18,7 +18,7 @@ class WalletService
         WalletChange::deleteAll();
     }
 
-    public function createWalletChange(string $entityName, $changeValue, string $comment): ?WalletChange
+    public function createWalletChange(string $entityName, int $changeValue, string $comment): ?WalletChange
     {
         $newWalletChange = new WalletChange();
         $newWalletChange->entity_name = $entityName;
