@@ -16,7 +16,7 @@ class WalletTest extends Unit
 
         $wallet->money_everyday = $testValueOne;
         $wallet->money_medfond = $testValueTwo;
-        $wallet->beforeSave();
+        $wallet->save();
 
         $this->assertEquals($testSum, $wallet->money_all, 'money_all field is equal all sum on wallet');
     }
