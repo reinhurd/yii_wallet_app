@@ -31,6 +31,8 @@ class Wallet extends ActiveRecord
     const MONEY_LONG_DEPOSITS = 6;
     const MONEY_CREDITS = 7;
 
+    private const ZERO_MONEY_WHEN_NO_INFO = 0;
+
     public static function tableName()
     {
         return 'wallet';
@@ -94,7 +96,7 @@ class Wallet extends ActiveRecord
     {
         $lastEntry = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
         if (!$lastEntry instanceof Wallet) {
-            return 0;
+            return self::ZERO_MONEY_WHEN_NO_INFO;
         }
 
         return $lastEntry->{$fieldName};
