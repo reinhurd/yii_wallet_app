@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\functional;
+namespace tests\unit\models;
 
 use app\models\Wallet;
 use Codeception\Test\Unit;
