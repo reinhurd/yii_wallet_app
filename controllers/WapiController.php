@@ -20,6 +20,8 @@ class WapiController extends ActiveController
     private $budgetService;
     private $telegramService;
     private $walletService;
+
+    private const COMMAND_SHOW_ALL_COMMAND = '/show_all';
     private const COMMAND_HELP = '/help';
     private const COMMAND_GET_INFO_ABOUT_WALLET = '/info';
     private const COMMAND_RESET = '/reset';
@@ -42,6 +44,21 @@ class WapiController extends ActiveController
         $this->budgetService = $budgetService;
         $this->telegramService = $telegramService;
         $this->walletService = $walletService;
+    }
+
+    //todo replace to call this method in this->handleSpecialCommand
+    public static function getAllCommand()
+    {
+        return [
+            self::COMMAND_SHOW_ALL_COMMAND => 'показать все команды',
+            self::COMMAND_HELP => 'помощь по внесению изменений в кошелек',
+            self::COMMAND_DEFAULT => 'технический тип команды при внесении изменений в кошелек', //todo убрать из выдачи
+            self::COMMAND_GET_INFO_ABOUT_WALLET => 'информация о последнем кошельке',
+            self::COMMAND_RESET => 'сбросить все кошельки',
+            self::COMMAND_RESET_NEW => 'сбросить все кошельки и задать новые значения',
+            self::COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY => 'сколько денег можно тратить каждый день в текущем месяце',
+            self::COMMAND_SALARY => 'распределить зарплату согласно правилам распределения ' . json_encode(BudgetService::FUNDS_SALARY_WEIGHTS_RULES),
+        ];
     }
 
     //todo make new endpoint access through telegram webhooks
@@ -106,6 +123,11 @@ class WapiController extends ActiveController
     private function handleSpecialCommand(string $messageText): bool
     {
         switch ($messageText) {
+            case self::COMMAND_SHOW_ALL_COMMAND:
+                $message = 'Доступные команды для бота:' . json_encode(self::getAllCommand());
+                $this->telegramService->sendMessage($message);
+
+                return true;
             case self::COMMAND_HELP:
                 $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
                 $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
