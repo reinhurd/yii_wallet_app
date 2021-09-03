@@ -52,7 +52,6 @@ class WapiController extends ActiveController
         return [
             self::COMMAND_SHOW_ALL_COMMAND => 'показать все команды',
             self::COMMAND_HELP => 'помощь по внесению изменений в кошелек',
-            self::COMMAND_DEFAULT => 'технический тип команды при внесении изменений в кошелек', //todo убрать из выдачи
             self::COMMAND_GET_INFO_ABOUT_WALLET => 'информация о последнем кошельке',
             self::COMMAND_RESET => 'сбросить все кошельки',
             self::COMMAND_RESET_NEW => 'сбросить все кошельки и задать новые значения',
