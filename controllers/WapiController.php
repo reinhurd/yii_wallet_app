@@ -50,13 +50,13 @@ class WapiController extends ActiveController
     public static function getAllCommand()
     {
         return [
-            self::COMMAND_SHOW_ALL_COMMAND => 'показать все команды',
-            self::COMMAND_HELP => 'помощь по внесению изменений в кошелек',
-            self::COMMAND_GET_INFO_ABOUT_WALLET => 'информация о последнем кошельке',
-            self::COMMAND_RESET => 'сбросить все кошельки',
-            self::COMMAND_RESET_NEW => 'сбросить все кошельки и задать новые значения',
-            self::COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY => 'сколько денег можно тратить каждый день в текущем месяце',
-            self::COMMAND_SALARY => 'распределить зарплату согласно правилам распределения ' . json_encode(BudgetService::FUNDS_SALARY_WEIGHTS_RULES),
+            self::COMMAND_SHOW_ALL_COMMAND => 'Show all bot command',
+            self::COMMAND_HELP => 'Help create wallet change entry',
+            self::COMMAND_GET_INFO_ABOUT_WALLET => 'Info about last wallet moneys',
+            self::COMMAND_RESET => 'Reset all wallets data',
+            self::COMMAND_RESET_NEW => 'Reset all wallets data and add new values',
+            self::COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY => 'How much I can spend everyday in current month daily',
+            self::COMMAND_SALARY => 'distribute salary according to distribution rules ' . json_encode(BudgetService::FUNDS_SALARY_WEIGHTS_RULES),
         ];
     }
 
