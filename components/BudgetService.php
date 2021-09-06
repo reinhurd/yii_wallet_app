@@ -10,7 +10,7 @@ use yii\base\InvalidArgumentException;
  */
 class BudgetService
 {
-    //todo make more clear dump this const for future responce about rules
+    //todo make more clear dump this const for future response about rules
     public const FUNDS_SALARY_WEIGHTS_RULES = [
         Wallet::MONEY_EVERYDAY => 0.4,
         Wallet::MONEY_MEDFOND => 0.1,

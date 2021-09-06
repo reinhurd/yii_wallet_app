@@ -62,6 +62,7 @@ class Wallet extends ActiveRecord
             ['money_long_reserves', 'default', 'value' => $this->getLastMoneyValue('money_long_reserves')],
             ['money_long_deposits', 'default', 'value' => $this->getLastMoneyValue('money_long_deposits')],
             ['money_credits', 'default', 'value' => $this->getLastMoneyValue('money_credits')],
+            ['money_credits', 'validateCreditFunds'],
             [['last_update_date'], 'safe'],
         ];
     }
@@ -84,6 +85,13 @@ class Wallet extends ActiveRecord
 
     public function beforeSave($insert)
     {
+        //todo handle this to BudgetService
+        //dont keep positive credits
+        if ($this->money_credits > 0) {
+            $this->money_everyday += $this->money_credits;
+            $this->money_credits = 0;
+        }
+
         /** @var BudgetService $budgetService */
         $budgetService = \Yii::createObject(BudgetService::class);
         $this->last_update_date = new Expression('NOW()');
