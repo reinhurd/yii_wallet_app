@@ -6,16 +6,42 @@ use app\models\Wallet;
 use app\models\WalletChange;
 use yii\base\InvalidArgumentException;
 use yii\base\UnknownPropertyException;
+use yii\db\Expression;
 
 /**
  * Viewing Wallet and updating funds in it by some secondary services
  */
 class WalletService
 {
+    private $budgetService;
+
+    public function __construct(BudgetService $budgetService)
+    {
+        $this->budgetService = $budgetService;
+    }
+
     public function resetWallets(): void
     {
         Wallet::deleteAll();
         WalletChange::deleteAll();
+    }
+
+    public function saveWallet(Wallet $wallet): ?Wallet
+    {
+        //dont keep positive credits
+        if ($wallet->money_credits > 0) {
+            $wallet->money_everyday += $wallet->money_credits;
+            $wallet->money_credits = 0;
+        }
+
+        $wallet->last_update_date = new Expression('NOW()');
+        $wallet->money_all = $this->budgetService->countMoneyForDayByFunds($wallet);
+
+        if ($wallet->save()) {
+            return $wallet;
+        }
+
+        return null;
     }
 
     public function createWalletChange(string $entityName, int $changeValue, string $comment): ?WalletChange
@@ -51,11 +77,7 @@ class WalletService
             return null;
         }
 
-        if (!$newWallet->save()) {
-            return null;
-        }
-
-        return $newWallet;
+        return $this->saveWallet($newWallet);
     }
 
     public function setNewWalletToEmptyBase(array $newWalletValues): void
@@ -73,7 +95,7 @@ class WalletService
             $newWallet->{$name} = $newWalletValues[$i];
             $i++;
         }
-        if (!$newWallet->save()) {
+        if ($this->saveWallet($newWallet) === null) {
             throw new InvalidArgumentException();
         }
     }

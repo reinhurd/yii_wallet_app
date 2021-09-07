@@ -2,9 +2,7 @@
 
 namespace app\models;
 
-use app\components\BudgetService;
 use yii\db\ActiveRecord;
-use yii\db\Expression;
 
 /**
  * This is the model class for table "wallet".
@@ -81,23 +79,6 @@ class Wallet extends ActiveRecord
             'money_credits' => 'Money Credits',
             'last_update_date' => 'Last Update Date',
         ];
-    }
-
-    public function beforeSave($insert)
-    {
-        //todo handle this to BudgetService
-        //dont keep positive credits
-        if ($this->money_credits > 0) {
-            $this->money_everyday += $this->money_credits;
-            $this->money_credits = 0;
-        }
-
-        /** @var BudgetService $budgetService */
-        $budgetService = \Yii::createObject(BudgetService::class);
-        $this->last_update_date = new Expression('NOW()');
-        $this->money_all = $budgetService->countMoneyForDayByFunds($this);
-
-        return true;
     }
 
     private function getLastMoneyValue(string $fieldName): int
