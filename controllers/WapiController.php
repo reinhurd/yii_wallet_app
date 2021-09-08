@@ -15,8 +15,6 @@ use Yii;
 class WapiController extends ActiveController
 {
     public $modelClass = 'app\models\Wallet';
-    /** @var Wallet|null */
-    private $lastWallet;
     private $budgetService;
     private $telegramService;
     private $walletService;
@@ -39,7 +37,7 @@ class WapiController extends ActiveController
         $config = []
     ) {
         parent::__construct($id, $module, $config);
-        $this->lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
+
         Yii::$app->response->format = Response::FORMAT_JSON;
         $this->budgetService = $budgetService;
         $this->telegramService = $telegramService;
@@ -63,7 +61,7 @@ class WapiController extends ActiveController
     //todo make new endpoint access through telegram webhooks
     public function actionGetLastWalletInfo()
     {
-        return $this->lastWallet;
+        return $this->walletService->getLastWalletInfo();
     }
 
     /*

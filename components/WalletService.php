@@ -100,7 +100,7 @@ class WalletService
         }
     }
 
-    public function getLastWalletInfo(): ?int
+    public function getLastWalletInfo(): int
     {
         $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
         if (!$lastWallet instanceof Wallet) {
