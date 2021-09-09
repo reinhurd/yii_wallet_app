@@ -27,7 +27,7 @@ Setting for telegram bot
 ###RoadMap
 ~~1. Make reset method to clear wallet and set new param~~
 2. More funds fields
-3. Make Services in controller
+3. Make Services in controller 
 ~~4. Automatically count available money for day~~
 5. More user friendly interface in bot
 6. Delete trash files from Yii template

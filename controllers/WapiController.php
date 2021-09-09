@@ -3,6 +3,7 @@ namespace app\controllers;
 
 use app\components\BudgetService;
 use app\components\WalletService;
+use app\models\repository\WalletRepository;
 use app\models\Wallet;
 use app\models\WalletChange;
 use app\components\TelegramService;
@@ -17,6 +18,7 @@ class WapiController extends ActiveController
     public $modelClass = 'app\models\Wallet';
     private $budgetService;
     private $telegramService;
+    private $walletRepository;
     private $walletService;
 
     private const COMMAND_SHOW_ALL_COMMAND = '/show_all';
@@ -33,6 +35,7 @@ class WapiController extends ActiveController
         $module,
         BudgetService $budgetService,
         TelegramService $telegramService,
+        WalletRepository $walletRepository,
         WalletService $walletService,
         $config = []
     ) {
@@ -41,6 +44,7 @@ class WapiController extends ActiveController
         Yii::$app->response->format = Response::FORMAT_JSON;
         $this->budgetService = $budgetService;
         $this->telegramService = $telegramService;
+        $this->walletRepository = $walletRepository;
         $this->walletService = $walletService;
     }
 
@@ -109,7 +113,7 @@ class WapiController extends ActiveController
             throw new Exception();
         }
 
-        $lastLastWallet = Wallet::find()->where(['id' => $newWalletChange->wallet_id])->one();
+        $lastLastWallet = $this->walletRepository->getById($newWalletChange->wallet_id);
         $message = "Success {$newWalletChange->id} {$newWalletChange->entity_name} New total sum: {$lastLastWallet->money_all}";
 
         $this->telegramService->sendMessage($message);

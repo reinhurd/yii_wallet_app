@@ -2,6 +2,7 @@
 
 namespace app\components;
 
+use app\models\repository\WalletRepository;
 use app\models\Wallet;
 use app\models\WalletChange;
 use yii\base\InvalidArgumentException;
@@ -14,10 +15,14 @@ use yii\db\Expression;
 class WalletService
 {
     private $budgetService;
+    private $walletRepository;
 
-    public function __construct(BudgetService $budgetService)
-    {
+    public function __construct(
+        BudgetService $budgetService,
+        WalletRepository $walletRepository
+    ) {
         $this->budgetService = $budgetService;
+        $this->walletRepository = $walletRepository;
     }
 
     public function resetWallets(): void
@@ -60,7 +65,7 @@ class WalletService
 
     public function beforeSaveWalletChange(WalletChange $walletChange): ?Wallet
     {
-        $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
+        $lastWallet = $this->walletRepository->getLastWallet();
         if (!$lastWallet instanceof Wallet) {
             return null;
         }
@@ -102,7 +107,7 @@ class WalletService
 
     public function getLastWalletInfo(): int
     {
-        $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
+        $lastWallet = $this->walletRepository->getLastWallet();
         if (!$lastWallet instanceof Wallet) {
             throw new InvalidArgumentException();
         }

@@ -2,6 +2,7 @@
 
 namespace app\components;
 
+use app\models\repository\WalletRepository;
 use app\models\Wallet;
 use yii\base\InvalidArgumentException;
 
@@ -20,10 +21,14 @@ class BudgetService
         Wallet::MONEY_LONG_DEPOSITS => 0.1,
         Wallet::MONEY_CREDITS => 0.1
     ];
+    private $walletRepository;
     private $walletService;
 
-    public function __construct(WalletService $walletService)
-    {
+    public function __construct(
+        WalletRepository $walletRepository,
+        WalletService $walletService
+    ) {
+        $this->walletRepository = $walletRepository;
         $this->walletService = $walletService;
     }
 
@@ -42,7 +47,10 @@ class BudgetService
 
     public function getMoneyForCurrentMonth(): float
     {
-        $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
+        $lastWallet = $this->walletRepository->getLastWallet();
+        if (!$lastWallet instanceof Wallet) {
+            throw new InvalidArgumentException();
+        }
         $timestamp = date('Y-m-d');
         $daysInMonth = (int)date('t', strtotime($timestamp));
         $thisDayInMonth = (int)date('j', strtotime($timestamp));
