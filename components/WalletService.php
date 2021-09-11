@@ -18,10 +18,10 @@ class WalletService
     private $walletRepository;
 
     public function __construct(
-        BudgetService $budgetService,
+        //BudgetService $budgetService,
         WalletRepository $walletRepository
     ) {
-        $this->budgetService = $budgetService;
+        //$this->budgetService = $budgetService;
         $this->walletRepository = $walletRepository;
     }
 
@@ -40,7 +40,7 @@ class WalletService
         }
 
         $wallet->last_update_date = new Expression('NOW()');
-        $wallet->money_all = $this->budgetService->countMoneyForDayByFunds($wallet);
+        //$wallet->money_all = $this->budgetService->countMoneyForDayByFunds($wallet);
 
         if ($wallet->save()) {
             return $wallet;
