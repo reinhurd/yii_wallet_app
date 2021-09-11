@@ -58,7 +58,7 @@ class WapiController extends ActiveController
             self::COMMAND_RESET => 'Reset all wallets data',
             self::COMMAND_RESET_NEW => 'Reset all wallets data and add new values',
             self::COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY => 'How much I can spend everyday in current month daily',
-            self::COMMAND_SALARY => 'distribute salary according to distribution rules ' . var_export(BudgetService::FUNDS_SALARY_WEIGHTS_RULES, 1),
+            self::COMMAND_SALARY => 'distribute salary according to distribution rules ' . print_r(BudgetService::FUNDS_SALARY_WEIGHTS_RULES, 1),
         ];
     }
 
