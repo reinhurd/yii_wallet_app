@@ -60,7 +60,6 @@ class Wallet extends ActiveRecord
             ['money_long_reserves', 'default', 'value' => $this->getLastMoneyValue('money_long_reserves')],
             ['money_long_deposits', 'default', 'value' => $this->getLastMoneyValue('money_long_deposits')],
             ['money_credits', 'default', 'value' => $this->getLastMoneyValue('money_credits')],
-            ['money_credits', 'validateCreditFunds'],
             [['last_update_date'], 'safe'],
         ];
     }
