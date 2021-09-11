@@ -2,9 +2,7 @@
 
 namespace app\models;
 
-use app\components\BudgetService;
 use yii\db\ActiveRecord;
-use yii\db\Expression;
 
 /**
  * This is the model class for table "wallet".
@@ -30,6 +28,8 @@ class Wallet extends ActiveRecord
     const MONEY_LONG_RESERVES = 5;
     const MONEY_LONG_DEPOSITS = 6;
     const MONEY_CREDITS = 7;
+
+    private const ZERO_MONEY_WHEN_NO_INFO = 0;
 
     public static function tableName()
     {
@@ -60,6 +60,7 @@ class Wallet extends ActiveRecord
             ['money_long_reserves', 'default', 'value' => $this->getLastMoneyValue('money_long_reserves')],
             ['money_long_deposits', 'default', 'value' => $this->getLastMoneyValue('money_long_deposits')],
             ['money_credits', 'default', 'value' => $this->getLastMoneyValue('money_credits')],
+            ['money_credits', 'validateCreditFunds'],
             [['last_update_date'], 'safe'],
         ];
     }
@@ -80,21 +81,11 @@ class Wallet extends ActiveRecord
         ];
     }
 
-    public function beforeSave($insert)
-    {
-        /** @var BudgetService $budgetService */
-        $budgetService = \Yii::createObject(BudgetService::class);
-        $this->last_update_date = new Expression('NOW()');
-        $this->money_all = $budgetService->countMoneyForDayByFunds($this);
-
-        return true;
-    }
-
     private function getLastMoneyValue(string $fieldName): int
     {
         $lastEntry = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
         if (!$lastEntry instanceof Wallet) {
-            return 0;
+            return self::ZERO_MONEY_WHEN_NO_INFO;
         }
 
         return $lastEntry->{$fieldName};

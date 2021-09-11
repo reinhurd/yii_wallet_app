@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\WalletService;
 use Yii;
 use app\models\Wallet;
 use app\models\WalletSearch;
@@ -69,7 +70,8 @@ class WalletController extends Controller
     {
         $model = new Wallet();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        $walletService = Yii::createObject(WalletService::class);
+        if ($model->load(Yii::$app->request->post()) && $walletService->saveWallet($model) !== null) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

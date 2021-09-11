@@ -14,17 +14,38 @@ Setting for telegram bot
 
 Отправка сообщений в бот - через sendmessage и ПОСТ-параметры
 
+###Conception
+
+Есть **Wallet** - текущий "слепок" кошелька на данный момент. Это вся доступная сумма, разбитая по фондам - каким то статьям расходов (например, медицина\депозит\кредитные обязательства\вклады\на мелочи и т.д.)
+
+Каждый раз, когда деньги на что-то тратятся (или вносятся), создается **WalletChange** - "лог" изменений, указывающий статью (фонд, например, положил в депозит 100 рублей), и каммент с датой. Одновременно с созданием такого лога происходит обновление Wallet - создается новый слепок с учетом внесенных изменений.
+
+Есть сервисы:
+- TelegramService, отвечающий за распознавание команд с бота
+- WalletService, куда вынес логику обновлений Wallet и WalletChange
+- BudgetService, который отвечает за финансовую математику - распределение зарплаты, сколько денег есть на день и т.д.
+
 ###RoadMap
 ~~1. Make reset method to clear wallet and set new param~~
+
 2. More funds fields
-3. Make Services in controller
-4. Automatically count available money for day
+   
+3. Make Services in controller 
+
+~~4. Automatically count available money for day~~
+
 5. More user friendly interface in bot
+   
 6. Delete trash files from Yii template
+   
 7. Menu on the main page
+   
 8. Rename wallet to dayWallets
 
 ###Wishes
-1. Dynamically set funds fields for wallet model
+
+1. Dynamically set funds fields for wallet model - store funds as json?
+   
 2. Email notifications
+   
 3. More financial magic?

@@ -2,23 +2,54 @@
 
 namespace app\components;
 
+use app\models\repository\WalletRepository;
 use app\models\Wallet;
 use app\models\WalletChange;
 use yii\base\InvalidArgumentException;
 use yii\base\UnknownPropertyException;
+use yii\db\Expression;
 
 /**
  * Viewing Wallet and updating funds in it by some secondary services
  */
 class WalletService
 {
+    private $budgetService;
+    private $walletRepository;
+
+    public function __construct(
+        BudgetService $budgetService,
+        WalletRepository $walletRepository
+    ) {
+        $this->budgetService = $budgetService;
+        $this->walletRepository = $walletRepository;
+    }
+
     public function resetWallets(): void
     {
         Wallet::deleteAll();
         WalletChange::deleteAll();
     }
 
-    public function createWalletChange(string $entityName, $changeValue, string $comment): ?WalletChange
+    public function saveWallet(Wallet $wallet): ?Wallet
+    {
+        //dont keep positive credits
+        if ($wallet->money_credits > 0) {
+            $wallet->money_everyday += $wallet->money_credits;
+            $wallet->money_credits = 0;
+        }
+
+        $wallet->last_update_date = new Expression('NOW()');
+        $wallet->money_all = $this->budgetService->countMoneyForDayByFunds($wallet);
+
+        if ($wallet->save()) {
+            return $wallet;
+        }
+
+        return null;
+    }
+
+    public function createWalletChange(string $entityName, int $changeValue, string $comment): ?WalletChange
     {
         $newWalletChange = new WalletChange();
         $newWalletChange->entity_name = $entityName;
@@ -34,7 +65,7 @@ class WalletService
 
     public function beforeSaveWalletChange(WalletChange $walletChange): ?Wallet
     {
-        $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
+        $lastWallet = $this->walletRepository->getLastWallet();
         if (!$lastWallet instanceof Wallet) {
             return null;
         }
@@ -51,11 +82,7 @@ class WalletService
             return null;
         }
 
-        if (!$newWallet->save()) {
-            return null;
-        }
-
-        return $newWallet;
+        return $this->saveWallet($newWallet);
     }
 
     public function setNewWalletToEmptyBase(array $newWalletValues): void
@@ -73,14 +100,14 @@ class WalletService
             $newWallet->{$name} = $newWalletValues[$i];
             $i++;
         }
-        if (!$newWallet->save()) {
+        if ($this->saveWallet($newWallet) === null) {
             throw new InvalidArgumentException();
         }
     }
 
-    public function getLastWalletInfo(): ?int
+    public function getLastWalletInfo(): int
     {
-        $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
+        $lastWallet = $this->walletRepository->getLastWallet();
         if (!$lastWallet instanceof Wallet) {
             throw new InvalidArgumentException();
         }

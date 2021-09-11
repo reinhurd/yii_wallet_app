@@ -2,6 +2,7 @@
 
 namespace app\components;
 
+use app\models\repository\WalletRepository;
 use app\models\Wallet;
 use yii\base\InvalidArgumentException;
 
@@ -10,7 +11,9 @@ use yii\base\InvalidArgumentException;
  */
 class BudgetService
 {
-    private const FUNDS_SALARY_WEIGHTS_RULES = [
+    //todo make more clear dump this const for future response about rules
+    public const FUNDS_SALARY_WEIGHTS_RULES = [
+        Wallet::MONEY_EVERYDAY => 0.4,
         Wallet::MONEY_MEDFOND => 0.1,
         Wallet::MONEY_LONG_CLOTHES => 0.1,
         Wallet::MONEY_LONG_GIFTS => 0.1,
@@ -18,17 +21,21 @@ class BudgetService
         Wallet::MONEY_LONG_DEPOSITS => 0.1,
         Wallet::MONEY_CREDITS => 0.1
     ];
+    private $walletRepository;
     private $walletService;
 
-    public function __construct(WalletService $walletService)
-    {
+    public function __construct(
+        WalletRepository $walletRepository,
+        WalletService $walletService
+    ) {
+        $this->walletRepository = $walletRepository;
         $this->walletService = $walletService;
     }
 
     public function countMoneyForDayByFunds(Wallet $wallet): int
     {
         return array_sum([
-            $wallet->money_credits, //todo change credits work scheme
+            $wallet->money_credits,
             $wallet->money_everyday,
             $wallet->money_medfond,
             $wallet->money_long_clothes,
@@ -40,7 +47,10 @@ class BudgetService
 
     public function getMoneyForCurrentMonth(): float
     {
-        $lastWallet = Wallet::find()->orderBy(['id' => SORT_DESC])->one();
+        $lastWallet = $this->walletRepository->getLastWallet();
+        if (!$lastWallet instanceof Wallet) {
+            throw new InvalidArgumentException();
+        }
         $timestamp = date('Y-m-d');
         $daysInMonth = (int)date('t', strtotime($timestamp));
         $thisDayInMonth = (int)date('j', strtotime($timestamp));
@@ -56,7 +66,7 @@ class BudgetService
             if (empty($entityName)) {
                 throw new InvalidArgumentException();
             }
-            $changeValue = round($salary * $ruleValue);
+            $changeValue = (int)round($salary * $ruleValue);
             $comment = "Доля от зарплаты {$salary} в размере {$changeValue}";
             $this->walletService->createWalletChange($entityName, $changeValue, $comment);
         }
