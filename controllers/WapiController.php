@@ -48,7 +48,7 @@ class WapiController extends ActiveController
         $this->walletService = $walletService;
     }
 
-    //todo replace to call this method in this->handleSpecialCommand
+    //todo think about interface and classes for all command below
     public static function getAllCommand()
     {
         return [
@@ -68,9 +68,6 @@ class WapiController extends ActiveController
         return $this->walletService->getLastWalletInfo();
     }
 
-    /*
-     * todo create global endpoint to telegram, with help, and call this method from there
-     */
     public function actionTelegram()
     {
         $message = Yii::$app->request->post('message');
@@ -82,7 +79,7 @@ class WapiController extends ActiveController
             }
 
             $newWalletChange = $this->handleCommonChangeWalletFundCommand($messageText);
-        } catch (InvalidArgumentException|Exception $exception) {
+        } catch (Exception $exception) {
             $message = 'Error!' . $exception->getMessage() . $exception->getTraceAsString();
             $this->telegramService->sendMessage($message);
 

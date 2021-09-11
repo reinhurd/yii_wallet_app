@@ -7,17 +7,18 @@ use Codeception\Test\Unit;
 
 class WalletTest extends Unit
 {
-    public function testBeforeSave()
+    public function testLastMoneyValue()
     {
-        $testValueOne = 100;
-        $testValueTwo = 200;
-        $testSum = $testValueOne + $testValueTwo;
-        $wallet = new Wallet();
+        $testValue = random_int(1, 99);
+        $testFieldName = Wallet::getFieldByCode()[Wallet::MONEY_EVERYDAY];
+        $walletOne = new Wallet();
+        $walletOne->{$testFieldName} = $testValue;
+        $walletOne->save();
 
-        $wallet->money_everyday = $testValueOne;
-        $wallet->money_medfond = $testValueTwo;
-        $wallet->save();
+        $walletTwo = new Wallet();
+        $walletTwo->save();
+        $walletTwo->refresh();
 
-        $this->assertEquals($testSum, $wallet->money_all, 'money_all field is equal all sum on wallet');
+        $this->assertEquals($testValue, $walletTwo->{$testFieldName}, 'field value in next object must be equal on previous object');
     }
 }
