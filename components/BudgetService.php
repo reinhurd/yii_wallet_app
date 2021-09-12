@@ -32,6 +32,16 @@ class BudgetService
         $this->walletService = $walletService;
     }
 
+    public static function getFundsWeightDescription(): string
+    {
+        $result = '';
+        foreach (self::FUNDS_SALARY_WEIGHTS_RULES as $fieldCode => $value) {
+            $result .= PHP_EOL . Wallet::getFieldByCode()[$fieldCode] . ' => coef ' . $value;
+        }
+
+        return $result;
+    }
+
     public function getMoneyForCurrentMonth(): float
     {
         $lastWallet = $this->walletRepository->getLastWallet();
