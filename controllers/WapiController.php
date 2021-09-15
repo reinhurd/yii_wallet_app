@@ -74,22 +74,39 @@ class WapiController extends ActiveController
         try {
             $messageText = $message['text'];
 
-            if ($this->handleSpecialCommand($messageText)) {
-                return true;
+            $resultMessage = $this->handleSpecialCommand($messageText);
+            if ($resultMessage) {
+                return $this->telegramService->sendMessage($resultMessage);
             }
 
-            $newWalletChange = $this->handleCommonChangeWalletFundCommand($messageText);
+            $newWalletChangeMessage = $this->handleCommonChangeWalletFundCommand($messageText);
+
+            return $this->telegramService->sendMessage($newWalletChangeMessage);
         } catch (Exception $exception) {
             $message = 'Error!' . $exception->getMessage() . $exception->getTraceAsString();
-            $this->telegramService->sendMessage($message);
 
-            return true;
+            return $this->telegramService->sendMessage($message);
         }
-
-        return $newWalletChange;
     }
 
-    private function handleCommonChangeWalletFundCommand(string $messageText): WalletChange
+    public function actionWebBrowser()
+    {
+        $message = Yii::$app->request->get('message');
+        try {
+            $resultMessage = $this->handleSpecialCommand($message);
+            if ($resultMessage) {
+                return $resultMessage;
+            }
+
+            return $this->handleCommonChangeWalletFundCommand($message);
+        } catch (Exception $exception) {
+            $message = 'Error!' . $exception->getMessage() . $exception->getTraceAsString();
+
+            return $message;
+        }
+    }
+
+    private function handleCommonChangeWalletFundCommand(string $messageText): string
     {
         $params = $this->parseCommand($messageText);
         $changeValue = (int)$params[0];
@@ -111,62 +128,47 @@ class WapiController extends ActiveController
         }
 
         $lastLastWallet = $this->walletRepository->getById($newWalletChange->wallet_id);
-        $message = "Success {$newWalletChange->id} {$newWalletChange->entity_name} New total sum: {$lastLastWallet->money_all}";
 
-        $this->telegramService->sendMessage($message);
-
-        return $newWalletChange;
+        return "Success {$newWalletChange->id} {$newWalletChange->entity_name} New total sum: {$lastLastWallet->money_all}";
     }
 
-    private function handleSpecialCommand(string $messageText): bool
+    private function handleSpecialCommand(string $messageText): ?string
     {
         switch ($messageText) {
             case self::COMMAND_SHOW_ALL_COMMAND:
-                $message = 'Доступные команды для бота:' . json_encode(self::getAllCommand());
-                $this->telegramService->sendMessage($message);
-
-                return true;
+                return 'Доступные команды для бота:' . json_encode(self::getAllCommand());
             case self::COMMAND_HELP:
                 $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
                 $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
-                $this->telegramService->sendMessage($message);
 
-                return true;
+                return $message;
             case self::COMMAND_GET_INFO_ABOUT_WALLET:
                 $message = 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
-                $this->telegramService->sendMessage($message);
 
-                return true;
+                return $message;
             case self::COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY:
-                $message = 'Денег каждый день на текущий месяц = ' . $this->budgetService->getMoneyForCurrentMonth();
-                $this->telegramService->sendMessage($message);
-
-                return true;
+                return 'Денег каждый день на текущий месяц = ' . $this->budgetService->getMoneyForCurrentMonth();
             case self::COMMAND_RESET:
                 $this->walletService->resetWallets();
-                $message = 'Все кошельки очищены';
-                $this->telegramService->sendMessage($message);
 
-                return true;
+                return 'Все кошельки очищены';
             case strpos($messageText, self::COMMAND_SALARY) !== false:
                 $params = $this->parseCommand($messageText, self::COMMAND_SALARY);
                 $salary = $params[1];
                 $this->budgetService->setSalary($salary);
                 $message = 'Зарплата распределена по фонтам.';
                 $message .= 'Остаток денег на счете = ' . $this->walletService->getLastWalletInfo();
-                $this->telegramService->sendMessage($message);
 
-                return true;
+                return $message;
             case strpos($messageText, self::COMMAND_RESET_NEW) !== false:
                 $params = $this->parseCommand($messageText, self::COMMAND_RESET_NEW);
                 $this->walletService->setNewWalletToEmptyBase($params);
                 $message = 'Все кошельки очищены и заданы новые значения';
-                $this->telegramService->sendMessage($message);
 
-                return true;
+                return $message;
         }
 
-        return false;
+        return null;
     }
 
     private function parseCommand(string $text, string $operationType = self::COMMAND_DEFAULT): array
@@ -186,6 +188,7 @@ class WapiController extends ActiveController
         }
         $currentCount = count($array);
         if ($currentCount !== $arrayValidCount) {
+            //todo think about view error on web endpoint
             $this->telegramService->sendMessage("Нужно точное количество ($arrayValidCount) слов. Прислано: $currentCount");
             throw new InvalidArgumentException();
         }

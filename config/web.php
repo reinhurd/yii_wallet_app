@@ -53,6 +53,7 @@ $config = [
             'rules' => [
                 'GET wapi' => 'wapi/get-last-wallet-info',
                 'POST wapi/telegram' => 'wapi/telegram',
+                'GET wapi/browse' => 'wapi/web-browser',
             ],
         ],
         
