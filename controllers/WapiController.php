@@ -2,6 +2,7 @@
 namespace app\controllers;
 
 use app\components\BudgetService;
+use app\components\exceptions\CommandCountWordException;
 use app\components\WalletService;
 use app\models\repository\WalletRepository;
 use app\models\Wallet;
@@ -82,6 +83,8 @@ class WapiController extends ActiveController
             $newWalletChangeMessage = $this->handleCommonChangeWalletFundCommand($messageText);
 
             return $this->telegramService->sendMessage($newWalletChangeMessage);
+        } catch (CommandCountWordException $commandCountWordException) {
+            return $this->telegramService->sendMessage($commandCountWordException->getMessage());
         } catch (Exception $exception) {
             $message = 'Error!' . $exception->getMessage() . $exception->getTraceAsString();
 
@@ -99,6 +102,8 @@ class WapiController extends ActiveController
             }
 
             return $this->handleCommonChangeWalletFundCommand($message);
+        } catch (CommandCountWordException $commandCountWordException) {
+            return$commandCountWordException->getMessage();
         } catch (Exception $exception) {
             $message = 'Error!' . $exception->getMessage() . $exception->getTraceAsString();
 
@@ -188,9 +193,7 @@ class WapiController extends ActiveController
         }
         $currentCount = count($array);
         if ($currentCount !== $arrayValidCount) {
-            //todo think about view error on web endpoint
-            $this->telegramService->sendMessage("Нужно точное количество ($arrayValidCount) слов. Прислано: $currentCount");
-            throw new InvalidArgumentException();
+            throw new CommandCountWordException("Нужно точное количество ($arrayValidCount) слов. Прислано: $currentCount");
         }
 
         return $array;
