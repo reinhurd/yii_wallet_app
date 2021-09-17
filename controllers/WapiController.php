@@ -144,7 +144,7 @@ class WapiController extends ActiveController
                 return 'Доступные команды для бота:' . json_encode(self::getAllCommand());
             case self::COMMAND_HELP:
                 $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
-                $message .= PHP_EOL . 'Актуальные коды фондов' . json_encode(Wallet::getFieldByCode());
+                $message .= PHP_EOL . 'Актуальные коды фондов' . Wallet::getFieldByCodeDescription();
 
                 return $message;
             case self::COMMAND_GET_INFO_ABOUT_WALLET:

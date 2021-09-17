@@ -36,7 +36,8 @@ class BudgetService
     {
         $result = '';
         foreach (self::FUNDS_SALARY_WEIGHTS_RULES as $fieldCode => $value) {
-            $result .= PHP_EOL . Wallet::getFieldByCode()[$fieldCode] . ' => coef ' . $value;
+            $result .= '
+            ' . Wallet::getFieldByCode()[$fieldCode] . ' => coef ' . $value;
         }
 
         return $result;
