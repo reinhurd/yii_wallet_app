@@ -103,7 +103,7 @@ class WapiController extends ActiveController
 
             return $this->handleCommonChangeWalletFundCommand($message);
         } catch (CommandCountWordException $commandCountWordException) {
-            return$commandCountWordException->getMessage();
+            return $commandCountWordException->getMessage();
         } catch (Exception $exception) {
             $message = 'Error!' . $exception->getMessage() . $exception->getTraceAsString();
 
@@ -137,11 +137,23 @@ class WapiController extends ActiveController
         return "Success {$newWalletChange->id} {$newWalletChange->entity_name} New total sum: {$lastLastWallet->money_all}";
     }
 
+    private static function getAllCommandDescription(): string
+    {
+        //todo make description helper to remove copypaste
+        $result = '';
+        foreach (self::getAllCommand() as $command => $description) {
+            $result = '
+            ' . $command . ' => ' . $description;
+        }
+
+        return $result;
+    }
+
     private function handleSpecialCommand(string $messageText): ?string
     {
         switch ($messageText) {
             case self::COMMAND_SHOW_ALL_COMMAND:
-                return 'Доступные команды для бота:' . json_encode(self::getAllCommand());
+                return 'Доступные команды для бота:' . self::getAllCommandDescription();
             case self::COMMAND_HELP:
                 $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
                 $message .= PHP_EOL . 'Актуальные коды фондов' . Wallet::getFieldByCodeDescription();
