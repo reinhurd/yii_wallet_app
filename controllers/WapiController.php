@@ -3,6 +3,7 @@ namespace app\controllers;
 
 use app\components\BudgetService;
 use app\components\exceptions\CommandCountWordException;
+use app\components\helpers\DescriptionHelper;
 use app\components\WalletService;
 use app\models\repository\WalletRepository;
 use app\models\Wallet;
@@ -18,6 +19,7 @@ class WapiController extends ActiveController
 {
     public $modelClass = 'app\models\Wallet';
     private $budgetService;
+    private $descriptionHelper;
     private $telegramService;
     private $walletRepository;
     private $walletService;
@@ -35,6 +37,7 @@ class WapiController extends ActiveController
         $id,
         $module,
         BudgetService $budgetService,
+        DescriptionHelper $descriptionHelper,
         TelegramService $telegramService,
         WalletRepository $walletRepository,
         WalletService $walletService,
@@ -44,6 +47,7 @@ class WapiController extends ActiveController
 
         Yii::$app->response->format = Response::FORMAT_JSON;
         $this->budgetService = $budgetService;
+        $this->descriptionHelper = $descriptionHelper;
         $this->telegramService = $telegramService;
         $this->walletRepository = $walletRepository;
         $this->walletService = $walletService;
@@ -137,26 +141,14 @@ class WapiController extends ActiveController
         return "Success {$newWalletChange->id} {$newWalletChange->entity_name} New total sum: {$lastLastWallet->money_all}";
     }
 
-    private static function getAllCommandDescription(): string
-    {
-        //todo make description helper to remove copypaste
-        $result = '';
-        foreach (self::getAllCommand() as $command => $description) {
-            $result = '
-            ' . $command . ' => ' . $description;
-        }
-
-        return $result;
-    }
-
     private function handleSpecialCommand(string $messageText): ?string
     {
         switch ($messageText) {
             case self::COMMAND_SHOW_ALL_COMMAND:
-                return 'Доступные команды для бота:' . self::getAllCommandDescription();
+                return 'Доступные команды для бота:' . $this->descriptionHelper->getDescriptionFromArray(self::getAllCommand());
             case self::COMMAND_HELP:
                 $message = 'Первое слово - сумма с плюсом или минусом, второе - код денежного фонда, третье - коммент (не обязателен). Разделять пробелами';
-                $message .= PHP_EOL . 'Актуальные коды фондов' . Wallet::getFieldByCodeDescription();
+                $message .= PHP_EOL . 'Актуальные коды фондов' . $this->descriptionHelper->getDescriptionFromArray(Wallet::getFieldByCode());
 
                 return $message;
             case self::COMMAND_GET_INFO_ABOUT_WALLET:

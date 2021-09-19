@@ -49,17 +49,6 @@ class Wallet extends ActiveRecord
         ];
     }
 
-    public static function getFieldByCodeDescription(): string
-    {
-        $result = '';
-        foreach (self::getFieldByCode() as $code => $text) {
-            $result .= '
-            ' . $text . ' => ' . $code;
-        }
-
-        return $result;
-    }
-
     public function rules()
     {
         return [
