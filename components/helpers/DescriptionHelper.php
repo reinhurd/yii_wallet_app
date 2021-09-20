@@ -8,9 +8,9 @@ class DescriptionHelper
     {
         $result = '';
         foreach ($assocArray as $command => $description) {
-            $result = "\n" . $command . $delimeter . $description;
+            $result = chr(10) . $command . $delimeter . $description;
         }
 
-        return urlencode($result);
+        return $result;
     }
 }
