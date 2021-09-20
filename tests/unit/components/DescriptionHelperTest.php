@@ -19,9 +19,7 @@ class DescriptionHelperTest extends Unit
     {
         $array = [1=>'one', 2=>'two'];
         $delimeter = ' => ';
-        $expected = '
-            ' . 1 . $delimeter . 'one' . '
-            ' . 2 . $delimeter . 'two';
+        $expected = urlencode("\n" . 1 . $delimeter . 'one' . "\n" . 2 . $delimeter . 'two');
         $result = $this->helper->getDescriptionFromArray($array);
 
         $this->assertEquals($expected, $result);
