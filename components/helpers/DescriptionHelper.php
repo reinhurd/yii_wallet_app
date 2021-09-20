@@ -8,7 +8,7 @@ class DescriptionHelper
     {
         $result = '';
         foreach ($assocArray as $command => $description) {
-            $result = chr(10) . $command . $delimeter . $description;
+            $result .= chr(10) . $command . $delimeter . $description;
         }
 
         return $result;
