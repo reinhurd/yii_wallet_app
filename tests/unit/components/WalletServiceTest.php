@@ -6,7 +6,7 @@ use app\components\WalletService;
 use app\models\repository\WalletRepository;
 use app\models\Wallet;
 
-class WalletServiceTest extends BaseYiiUnit
+class WalletServiceTest extends BaseHelper
 {
     private $walletService;
 

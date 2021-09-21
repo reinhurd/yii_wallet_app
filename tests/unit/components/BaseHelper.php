@@ -5,7 +5,7 @@ namespace tests\unit\components;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase as Unit;
 
-class BaseYiiUnit extends Unit
+class BaseHelper extends Unit
 {
     protected function createARMock(string $originalClassName): MockObject
     {
