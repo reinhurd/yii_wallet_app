@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\unit\helpers;
+namespace tests\unit\components;
 
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\MockObject;

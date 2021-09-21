@@ -5,7 +5,6 @@ namespace tests\unit\components;
 use app\components\WalletService;
 use app\models\repository\WalletRepository;
 use app\models\Wallet;
-use tests\unit\helpers\BaseHelperTest;
 
 class WalletServiceTest extends BaseHelperTest
 {
