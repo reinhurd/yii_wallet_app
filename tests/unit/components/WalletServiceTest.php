@@ -5,6 +5,7 @@ namespace tests\unit\components;
 use app\components\WalletService;
 use app\models\repository\WalletRepository;
 use app\models\Wallet;
+use tests\unit\helpers\BaseHelperTest;
 
 class WalletServiceTest extends BaseHelperTest
 {
@@ -32,8 +33,10 @@ class WalletServiceTest extends BaseHelperTest
             ->method('save')
             ->willReturn($walletMock);
 
-        $this->assertEquals(100, $walletMock->money_everyday, 'Money from plused credits saved in everyday');
-        $this->assertEquals(100, $walletMock->money_all, 'Money sums saved in all');
-        $this->assertNotEmpty($walletMock->last_update_date);
+        $resultWallet = $this->walletService->saveWallet($walletMock);
+
+        $this->assertEquals(100, $resultWallet->money_everyday, 'Money from plused credits saved in everyday');
+        $this->assertEquals(100, $resultWallet->money_all, 'Money sums saved in all');
+        $this->assertNotEmpty($resultWallet->last_update_date);
     }
 }
