@@ -2,8 +2,8 @@
 
 namespace tests\unit\components;
 
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase as Unit;
 
 class BaseHelper extends Unit
 {
