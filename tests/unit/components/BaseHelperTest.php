@@ -5,7 +5,7 @@ namespace tests\unit\components;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class BaseHelper extends Unit
+class BaseHelperTest extends Unit
 {
     protected function createARMock(string $originalClassName): MockObject
     {
