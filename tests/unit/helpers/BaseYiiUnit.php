@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\unit;
+namespace tests\unit\helpers;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase as Unit;
