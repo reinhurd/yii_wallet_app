@@ -59,7 +59,7 @@ class BudgetServiceTest extends BaseHelperTest
             $this->walletService
                 ->expects(self::at($k))
                 ->method('createWalletChange')
-                ->with([$entityName, $changeValue, $comment])
+                ->with($entityName, $changeValue, $comment)
                 ->willReturn(null);
             $k++;
         }
