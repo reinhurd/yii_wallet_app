@@ -56,7 +56,7 @@ class BudgetServiceTest extends BaseHelperTest
             $entityName = Wallet::getFieldByCode()[(int)$fundName] ?? null;
             $changeValue = (int)round($salary * $ruleValue);
             $comment = "Доля от зарплаты {$salary} в размере {$changeValue}";
-            $this->walletRepository
+            $this->walletService
                 ->expects(self::at($k))
                 ->method('createWalletChange')
                 ->with([$entityName, $changeValue, $comment])
