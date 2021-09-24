@@ -43,18 +43,14 @@ class BudgetService
         return $result;
     }
 
-    public function getMoneyForCurrentMonth(): float
+    public function getMoneyForCurrentMonth(int $daysInMonthRemaining): float
     {
         $lastWallet = $this->walletRepository->getLastWallet();
         if (!$lastWallet instanceof Wallet) {
             throw new InvalidArgumentException();
         }
-        $timestamp = date('Y-m-d');
-        $daysInMonth = (int)date('t', strtotime($timestamp));
-        $thisDayInMonth = (int)date('j', strtotime($timestamp));
-        $daysRemaining = $daysInMonth - $thisDayInMonth;
 
-        return round($lastWallet->money_everyday / $daysRemaining);
+        return round($lastWallet->money_everyday / $daysInMonthRemaining);
     }
 
     public function setSalary(int $salary): void

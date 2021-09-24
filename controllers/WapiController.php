@@ -156,7 +156,7 @@ class WapiController extends ActiveController
 
                 return $message;
             case self::COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY:
-                return 'Денег каждый день на текущий месяц = ' . $this->budgetService->getMoneyForCurrentMonth();
+                return 'Денег каждый день на текущий месяц = ' . $this->budgetService->getMoneyForCurrentMonth($this->getRemainingDaysOfMonth());
             case self::COMMAND_RESET:
                 $this->walletService->resetWallets();
 
@@ -201,5 +201,15 @@ class WapiController extends ActiveController
         }
 
         return $array;
+    }
+
+    //todo move to some kind of datehelper
+    private function getRemainingDaysOfMonth(): int
+    {
+        $timestamp = date('Y-m-d');
+        $daysInMonth = (int)date('t', strtotime($timestamp));
+        $thisDayInMonth = (int)date('j', strtotime($timestamp));
+
+        return $daysInMonth - $thisDayInMonth;
     }
 }
