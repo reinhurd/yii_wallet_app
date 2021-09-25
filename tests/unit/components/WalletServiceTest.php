@@ -66,7 +66,7 @@ class WalletServiceTest extends BaseHelperTest
 
         $walletChangeMock = $this->createARMock(WalletChange::class);
         $walletChangeMock->entity_name = Wallet::getFieldByCode()[Wallet::MONEY_MEDFOND];
-        $walletChangeMock->changeValue = 100;
+        $walletChangeMock->change_value = 100;
 
         $result = $this->walletService->getBeforeSaveWalletChange($walletChangeMock);
         $expected = $walletMock->money_medfond + $walletChangeMock->changeValue;
