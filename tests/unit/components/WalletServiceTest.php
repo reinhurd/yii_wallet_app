@@ -69,7 +69,7 @@ class WalletServiceTest extends BaseHelperTest
         $walletChangeMock->change_value = 100;
 
         $result = $this->walletService->getBeforeSaveWalletChange($walletChangeMock);
-        $expected = $walletMock->money_medfond + $walletChangeMock->changeValue;
+        $expected = $walletMock->money_medfond + $walletChangeMock->change_value;
 
         $this->assertEquals($expected, $result->money_medfond);
     }
