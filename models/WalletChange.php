@@ -51,12 +51,13 @@ class WalletChange extends ActiveRecord
     {
         /** @var WalletService $walletService */
         $walletService = Yii::createObject(WalletService::class);
-        $newWallet = $walletService->beforeSaveWalletChange($this);
-        if (!$newWallet instanceof Wallet) {
+        $newWallet = $walletService->getBeforeSaveWalletChange($this);
+        $savedWallet = $walletService->saveWallet($newWallet);
+        if (!$savedWallet instanceof Wallet) {
             return false;
         }
 
-        $this->wallet_id = $newWallet->id;
+        $this->wallet_id = $savedWallet->id;
         $this->created_at = new Expression('NOW()');
 
         return true;

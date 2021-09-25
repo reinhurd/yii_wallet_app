@@ -5,6 +5,7 @@ namespace tests\unit\components;
 use app\components\WalletService;
 use app\models\repository\WalletRepository;
 use app\models\Wallet;
+use app\models\WalletChange;
 
 class WalletServiceTest extends BaseHelperTest
 {
@@ -52,5 +53,24 @@ class WalletServiceTest extends BaseHelperTest
         $result = $this->walletService->getLastWalletInfo();
 
         $this->assertEquals($walletMock->money_all, $result);
+    }
+
+    public function testGetBeforeSaveWalletChange(): void
+    {
+        $walletMock = $this->createARMock(Wallet::class);
+        $walletMock->money_medfond = 100;
+        $this->walletRepository
+            ->expects(self::once())
+            ->method('getLastWallet')
+            ->willReturn($walletMock);
+
+        $walletChangeMock = $this->createARMock(WalletChange::class);
+        $walletChangeMock->entity_name = Wallet::getFieldByCode()[Wallet::MONEY_MEDFOND];
+        $walletChangeMock->changeValue = 100;
+
+        $result = $this->walletService->getBeforeSaveWalletChange($walletChangeMock);
+        $expected = $walletMock->money_medfond + $walletChangeMock->changeValue;
+
+        $this->assertEquals($expected, $result->money_medfond);
     }
 }

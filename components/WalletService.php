@@ -60,7 +60,7 @@ class WalletService
         return $newWalletChange;
     }
 
-    public function beforeSaveWalletChange(WalletChange $walletChange): ?Wallet
+    public function getBeforeSaveWalletChange(WalletChange $walletChange): ?Wallet
     {
         $lastWallet = $this->walletRepository->getLastWallet();
         if (!$lastWallet instanceof Wallet) {
@@ -79,7 +79,7 @@ class WalletService
             return null;
         }
 
-        return $this->saveWallet($newWallet);
+        return $newWallet;
     }
 
     public function setNewWalletToEmptyBase(array $newWalletValues): void
