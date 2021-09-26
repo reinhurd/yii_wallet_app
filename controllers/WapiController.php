@@ -3,6 +3,7 @@ namespace app\controllers;
 
 use app\components\BudgetService;
 use app\components\exceptions\CommandCountWordException;
+use app\components\helpers\DateHelper;
 use app\components\helpers\DescriptionHelper;
 use app\components\WalletService;
 use app\models\repository\WalletRepository;
@@ -19,6 +20,7 @@ class WapiController extends ActiveController
 {
     public $modelClass = 'app\models\Wallet';
     private $budgetService;
+    private $dateHelper;
     private $descriptionHelper;
     private $telegramService;
     private $walletRepository;
@@ -37,6 +39,7 @@ class WapiController extends ActiveController
         $id,
         $module,
         BudgetService $budgetService,
+        DateHelper $dateHelper,
         DescriptionHelper $descriptionHelper,
         TelegramService $telegramService,
         WalletRepository $walletRepository,
@@ -47,6 +50,7 @@ class WapiController extends ActiveController
 
         Yii::$app->response->format = Response::FORMAT_JSON;
         $this->budgetService = $budgetService;
+        $this->dateHelper = $dateHelper;
         $this->descriptionHelper = $descriptionHelper;
         $this->telegramService = $telegramService;
         $this->walletRepository = $walletRepository;
@@ -156,7 +160,9 @@ class WapiController extends ActiveController
 
                 return $message;
             case self::COMMAND_GET_REMAINING_MONTH_EVERYDAY_MONEY:
-                return 'Денег каждый день на текущий месяц = ' . $this->budgetService->getMoneyForCurrentMonth($this->getRemainingDaysOfMonth());
+                return 'Денег каждый день на текущий месяц = ' . $this->budgetService->getMoneyForCurrentMonth(
+                    $this->dateHelper->getRemainingDaysOfMonth()
+                    );
             case self::COMMAND_RESET:
                 $this->walletService->resetWallets();
 
@@ -201,15 +207,5 @@ class WapiController extends ActiveController
         }
 
         return $array;
-    }
-
-    //todo move to some kind of datehelper
-    private function getRemainingDaysOfMonth(): int
-    {
-        $timestamp = date('Y-m-d');
-        $daysInMonth = (int)date('t', strtotime($timestamp));
-        $thisDayInMonth = (int)date('j', strtotime($timestamp));
-
-        return $daysInMonth - $thisDayInMonth;
     }
 }
