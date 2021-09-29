@@ -2,6 +2,7 @@
 
 namespace app\components;
 
+use app\models\repository\WalletChangeRepository;
 use app\models\repository\WalletRepository;
 use app\models\Wallet;
 use app\models\WalletChange;
@@ -15,17 +16,20 @@ use yii\db\Expression;
 class WalletService
 {
     private $walletRepository;
+    private $walletChangeRepository;
 
     public function __construct(
-        WalletRepository $walletRepository
+        WalletRepository $walletRepository,
+        WalletChangeRepository $walletChangeRepository
     ) {
         $this->walletRepository = $walletRepository;
+        $this->walletChangeRepository = $walletChangeRepository;
     }
 
     public function resetWallets(): void
     {
-        Wallet::deleteAll();
-        WalletChange::deleteAll();
+        $this->walletRepository->deleteAllWallet();
+        $this->walletChangeRepository->deleteAllWalletChange();
     }
 
     public function saveWallet(Wallet $wallet): ?Wallet

@@ -3,6 +3,7 @@
 namespace app\models\repository;
 
 use app\models\Wallet;
+use app\models\WalletChange;
 use yii\db\ActiveQuery;
 
 class WalletRepository
@@ -15,6 +16,11 @@ class WalletRepository
     public function getLastWallet(): ?Wallet
     {
         return $this->find()->orderBy(['id' => SORT_DESC])->one();
+    }
+
+    public function deleteAllWallet(): void
+    {
+        Wallet::deleteAll();
     }
 
     private function find(): ActiveQuery

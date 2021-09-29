@@ -3,6 +3,7 @@
 namespace tests\unit\components;
 
 use app\components\WalletService;
+use app\models\repository\WalletChangeRepository;
 use app\models\repository\WalletRepository;
 use app\models\Wallet;
 use app\models\WalletChange;
@@ -11,12 +12,14 @@ class WalletServiceTest extends BaseHelperTest
 {
     private $walletService;
     private $walletRepository;
+    private $walletChangeRepository;
 
     public function setUp(): void
     {
         parent::setUp();
         $this->walletRepository = $this->createMock(WalletRepository::class);
-        $this->walletService = new WalletService($this->walletRepository);
+        $this->walletChangeRepository = $this->createMock(WalletChangeRepository::class);
+        $this->walletService = new WalletService($this->walletRepository, $this->walletChangeRepository);
     }
 
     public function testSaveWallet(): void
@@ -72,5 +75,18 @@ class WalletServiceTest extends BaseHelperTest
         $expected = $walletMock->money_medfond + $walletChangeMock->change_value;
 
         $this->assertEquals($expected, $result->money_medfond);
+    }
+
+    public function testResetWallets(): void
+    {
+        $this->walletRepository
+            ->expects(self::once())
+            ->method('deleteAllWallet');
+        $this->walletChangeRepository
+            ->expects(self::once())
+            ->method('deleteAllWalletChange');
+
+        $this->walletService->resetWallets();
+        $this->assertTrue(true);
     }
 }
