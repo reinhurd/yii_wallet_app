@@ -3,7 +3,6 @@
 namespace app\models\repository;
 
 use app\models\Wallet;
-use app\models\WalletChange;
 use yii\db\ActiveQuery;
 
 class WalletRepository

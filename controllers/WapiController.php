@@ -18,7 +18,6 @@ use Yii;
 
 class WapiController extends ActiveController
 {
-    public $modelClass = 'app\models\Wallet';
     private $budgetService;
     private $dateHelper;
     private $descriptionHelper;
