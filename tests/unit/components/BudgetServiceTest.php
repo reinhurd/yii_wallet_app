@@ -3,20 +3,22 @@
 namespace tests\unit\components;
 
 use app\components\BudgetService;
+use app\components\validators\SalaryValidator;
 use app\components\WalletService;
 use app\models\repository\WalletRepository;
 use app\models\Wallet;
-use yii\base\InvalidArgumentException;
 
 class BudgetServiceTest extends BaseHelperTest
 {
     private $budgetService;
+    private $salaryValidator;
     private $walletService;
     private $walletRepository;
 
     public function setUp(): void
     {
         parent::setUp();
+        $this->salaryValidator = $this->createMock(SalaryValidator::class);
         $this->walletRepository = $this->createMock(WalletRepository::class);
         $this->walletService = $this->createMock(WalletService::class);
         $this->budgetService = new BudgetService($this->walletRepository, $this->walletService);
@@ -50,6 +52,11 @@ class BudgetServiceTest extends BaseHelperTest
 
     public function testSetSalary()
     {
+        $this->salaryValidator
+            ->method('validateSalaryFundsSum')
+            ->with(BudgetService::FUNDS_SALARY_WEIGHTS_RULES)
+            ->willReturn(true);
+
         $salary = 100000;
         $k = 0;
         foreach (BudgetService::FUNDS_SALARY_WEIGHTS_RULES as $fundName => $ruleValue) {

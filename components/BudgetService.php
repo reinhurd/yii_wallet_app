@@ -2,6 +2,7 @@
 
 namespace app\components;
 
+use app\components\validators\SalaryValidator;
 use app\models\repository\WalletRepository;
 use app\models\Wallet;
 use yii\base\InvalidArgumentException;
@@ -21,13 +22,16 @@ class BudgetService
         Wallet::MONEY_LONG_DEPOSITS => 0.1,
         Wallet::MONEY_CREDITS => 0.1
     ];
+    private $salaryValidator;
     private $walletRepository;
     private $walletService;
 
     public function __construct(
+        SalaryValidator $salaryValidator,
         WalletRepository $walletRepository,
         WalletService $walletService
     ) {
+        $this->salaryValidator = $salaryValidator;
         $this->walletRepository = $walletRepository;
         $this->walletService = $walletService;
     }
@@ -54,6 +58,9 @@ class BudgetService
 
     public function setSalary(int $salary): void
     {
+        if (!$this->salaryValidator->validateSalaryFundsSum(self::FUNDS_SALARY_WEIGHTS_RULES)) {
+            throw new InvalidArgumentException();
+        }
         foreach (self::FUNDS_SALARY_WEIGHTS_RULES as $fundName => $ruleValue) {
             $entityName = Wallet::getFieldByCode()[(int)$fundName] ?? null;
             if (empty($entityName)) {
