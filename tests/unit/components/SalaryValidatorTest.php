@@ -15,22 +15,38 @@ class SalaryValidatorTest extends Unit
         $this->salaryValidator = new SalaryValidator();
     }
 
-    public function testValidateSalaryFundsSum(): void
+    /**
+     * @dataProvider validateSalaryFundsDataProvider
+     */
+    public function testValidateSalaryFundsSum(
+        array $fundsSum,
+        bool $expectedResult
+    ): void {
+        $result= $this->salaryValidator->validateSalaryFundsSum($fundsSum);
+
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function validateSalaryFundsDataProvider(): array
     {
-        $testArrayInvalid = [
-            'a' => 0.2,
-            'b' => 0.9
+        return [
+            [
+                [
+                    'a' => 0.2,
+                    'b' => 0.9
+                ],
+                false
+            ],
+            [
+                [
+                    'a' => 0.4,
+                    'b' => 0.6
+                ],
+                true
+            ]
         ];
-
-        $testArrayValid = [
-            'a' => 0.4,
-            'b' => 0.6
-        ];
-
-        $resultInvalid = $this->salaryValidator->validateSalaryFundsSum($testArrayInvalid);
-        $resultValid = $this->salaryValidator->validateSalaryFundsSum($testArrayValid);
-
-        $this->assertFalse($resultInvalid);
-        $this->assertTrue($resultValid);
     }
 }
