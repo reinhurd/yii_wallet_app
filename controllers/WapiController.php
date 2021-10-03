@@ -71,11 +71,19 @@ class WapiController extends ActiveController
     }
 
     //todo make new endpoint access through telegram webhooks
+
+    /**
+     * GET /wapi
+     */
     public function actionGetLastWalletInfo()
     {
         return $this->walletService->getLastWalletInfo();
     }
 
+    /**
+     * POST /wapi/telegram
+     * message{string}
+     */
     public function actionTelegram()
     {
         $message = Yii::$app->request->post('message');
@@ -99,6 +107,10 @@ class WapiController extends ActiveController
         }
     }
 
+    /**
+     * GET wapi/browse
+     * message{string}
+     */
     public function actionWebBrowser()
     {
         $message = Yii::$app->request->get('message');
